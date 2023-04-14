@@ -1,34 +1,35 @@
+const createUserTable = require("../services/create");
 const connectDatabase = require("../services/database");
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-const createUserTable = require("../services/create");
 import bcrypt from "bcrypt";
+const { register, login } = require("../auth/auth")
 
 exports.addUser = function () {
   return async function (req, res) {
     //console.log("u user.js sam")
-    const { firstname, lastname, email, password } = req.body;
-    const password_hash = await bcrypt.hash(password, 8)
-    const sql =
-      "INSERT INTO user (firstname, lastname, email, password) VALUES (?, ?, ?, ?)";
     try {
-      await new Promise((resolve, reject) => {
-        
-        db.run(sql, [firstname, lastname, email, password_hash], function (err) {
-          if (err) reject(err);
-          else {
-            resolve(this.lastID);
-            return {
-                email,
-            }
-          }
-        });
-      });
-      res.send("User added successfully!");
+      let result = await register(req)
+      console.log("result: ", result)
+      res.send({result, msg: "User successfully created"});
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
       res.status(500).json({ err: "Email is already in use!" });
+    }
+  };
+};
+
+exports.authUser = function () {
+  return async (req, res) => {
+    try {
+      let result = await login(req)
+      console.log("result: ", result)
+      res.send({result, msg: "User successfully logged"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Email and password do not match" });
     }
   };
 };
@@ -52,28 +53,7 @@ exports.getUser = function () {
   };
 };
 
-exports.authUser = function () {
-  return async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const rows = await new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM user WHERE email = ?`, [email], (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      });
-      console.log("daj mi row: ", rows.length);
-      if (rows.length > 0 && rows[0].password === password) {
-        res.status(200).send("User logged in successfully!");
-      } else {
-        res.status(500).json({ err: "Invalid email or password!" });
-      }
-    } catch (err) {
-      console.error(err.message);
-      res.json({ err: "Something went wrong!" });
-    }
-  };
-};
+
 
 /* async function addUser(firstname, lastname, email, password) {} */
 

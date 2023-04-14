@@ -7,11 +7,14 @@ const user = require("../services/user");
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const createUserTable = require("../services/create");
+const { verify } = require("../auth/auth")
+
+createUserTable()
 
 router.get("/", (req, res) => res.send("cao iz routera"));
 router.get("/a", (req, res) => res.send("cao na drugoj ruti"));
 
-router.get("/users", user.getUser());
+router.get("/users", [verify], user.getUser());
 
 router.post("/add/user", user.addUser());
 
