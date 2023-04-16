@@ -44,11 +44,15 @@ async function login(req) {
     console.log("daj mi row: ", rows);
     if (rows.length > 0) {
       const passwordMatch = await bcrypt.compare(password, rows[0].password);
-      if (passwordMatch) {
-        const token = jwt.sign({ email }, process.env.JWT_SECRET);
+      console.log(passwordMatch)
+      if (passwordMatch === true) {
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+          algorithm: "HS512",
+          expiresIn: "1 week",
+        });
         return {
-          email,
           token,
+          email: email,
         };
       } else {
         throw new Error("Invalid email or password!");

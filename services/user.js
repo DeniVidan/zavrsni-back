@@ -21,11 +21,11 @@ exports.addUser = function () {
 };
 
 exports.authUser = function () {
-  return async (req, res) => {
+  return async function (req, res) {
     try {
       let result = await login(req)
       console.log("result: ", result)
-      res.send({result, msg: "User successfully logged"});
+      res.status(200).send({result, msg: "User successfully logged"});
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
