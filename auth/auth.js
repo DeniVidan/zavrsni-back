@@ -5,14 +5,14 @@ var jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 async function register(req) {
-  const { firstname, lastname, email, password } = req.body;
+  const { firstname, lastname, email, role, password } = req.body;
   const password_hash = await bcrypt.hash(password, 8);
   const sql =
-    "INSERT INTO user (firstname, lastname, email, password) VALUES (?, ?, ?, ?)";
+    "INSERT INTO user (firstname, lastname, email, role, password) VALUES (?, ?, ?, ?, ?)";
 
   try {
     let user = await new Promise((resolve, reject) => {
-      db.run(sql, [firstname, lastname, email, password_hash], function (err) {
+      db.run(sql, [firstname, lastname, email, role, password_hash], function (err) {
         if (err) {
           reject(err);
         } else {
@@ -32,6 +32,37 @@ async function register(req) {
   }
 }
 
+
+async function registerAdmin(req) {
+  const { firstname, lastname, email, restaurant_name, location, role, password } = req.body;
+  const password_hash = await bcrypt.hash(password, 8);
+  const sql =
+    "INSERT INTO user (firstname, lastname, email, restaurant_name, location, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  try {
+    let user = await new Promise((resolve, reject) => {
+      db.run(sql, [firstname, lastname, email, restaurant_name, location, role, password_hash], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+            algorithm: "HS512",
+            expiresIn: "1 week",
+          });
+          resolve({ token, email: email });
+        }
+      });
+    });
+    console.log("User registered successfully: ", email);
+    return { user };
+  } catch (error) {
+    console.error(error.message);
+    throw new Error("Email already in use");
+  }
+}
+
+
+
 async function login(req) {
   const { email, password } = req.body;
   try {
@@ -44,8 +75,8 @@ async function login(req) {
     console.log("daj mi row: ", rows);
     if (rows.length > 0) {
       const passwordMatch = await bcrypt.compare(password, rows[0].password);
-      console.log(passwordMatch)
-      if (passwordMatch === true) {
+      //console.log(passwordMatch)
+      if (passwordMatch) {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, {
           algorithm: "HS512",
           expiresIn: "1 week",
@@ -53,6 +84,7 @@ async function login(req) {
         return {
           token,
           email: email,
+          role: rows[0].role
         };
       } else {
         throw new Error("Invalid email or password!");
@@ -82,4 +114,4 @@ async function verify(req, res, next) {
   }
 }
 
-module.exports = { register, login, verify };
+module.exports = { register, registerAdmin, login, verify };

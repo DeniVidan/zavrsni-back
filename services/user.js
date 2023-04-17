@@ -1,9 +1,6 @@
-const createUserTable = require("../services/create");
-const connectDatabase = require("../services/database");
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-import bcrypt from "bcrypt";
-const { register, login } = require("../auth/auth")
+const { register, registerAdmin, login } = require("../auth/auth")
 
 exports.addUser = function () {
   return async function (req, res) {
@@ -12,6 +9,21 @@ exports.addUser = function () {
       let result = await register(req)
       console.log("result: ", result)
       res.send({result, msg: "User successfully created"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Email is already in use!" });
+    }
+  };
+};
+
+exports.addAdmin = function () {
+  return async function (req, res) {
+    //console.log("u user.js sam")
+    try {
+      let result = await registerAdmin(req)
+      console.log("result: ", result)
+      res.send({result, msg: "User successfully logged in"});
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
