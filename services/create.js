@@ -31,9 +31,8 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS tables (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       restaurant_id TEXT NOT NULL,
-      name TEXT NOT NULL,
-      capacity INTEGER NOT NULL,
-      is_available TEXT NOT NULL,
+      table_name TEXT NOT NULL,
+      table_size INTEGER NOT NULL,
       FOREIGN KEY (restaurant_id) REFERENCES user(id)
     )
   `,

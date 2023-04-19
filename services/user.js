@@ -1,6 +1,8 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
+const { getRestaurantTables } = require("../services/select")
+const { createTable, createTermin } = require("../services/insert")
 
 exports.addUser = function () {
   return async function (req, res) {
@@ -61,6 +63,48 @@ exports.getUser = function () {
     } catch (err) {
       console.error(err.message);
       res.json({ err: "Something went wrong!" });
+    }
+  };
+};
+
+exports.getRestaurantTables = function () {
+  return async function (req, res) {
+    try {
+      let result = await getRestaurantTables(req)
+      console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant tables retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant tables error" });
+    }
+  };
+};
+
+exports.createTable = function () {
+  return async function (req, res) {
+    try {
+      let result = await createTable(req)
+      console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant tables created"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant tables can't create error" });
+    }
+  };
+};
+
+exports.createTermin = function () {
+  return async function (req, res) {
+    try {
+      let result = await createTermin(req)
+      console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant termin created"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant termin can't create error" });
     }
   };
 };

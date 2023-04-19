@@ -22,6 +22,11 @@ router.post("/add/admin", user.addAdmin());
 
 router.post("/auth/user", user.authUser());
 
+router.get("/restaurant/tables", [verify], user.getRestaurantTables())
+
+router.post("/create/tables", [verify], user.createTable());
+
+router.post("/create/termin", [verify], user.createTermin());
     
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();

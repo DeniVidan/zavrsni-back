@@ -12,17 +12,21 @@ async function register(req) {
 
   try {
     let user = await new Promise((resolve, reject) => {
-      db.run(sql, [firstname, lastname, email, role, password_hash], function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-            algorithm: "HS512",
-            expiresIn: "1 week",
-          });
-          resolve({ token, email: email });
+      db.run(
+        sql,
+        [firstname, lastname, email, role, password_hash],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+              algorithm: "HS512",
+              expiresIn: "1 week",
+            });
+            resolve({ token, email: email });
+          }
         }
-      });
+      );
     });
     console.log("User registered successfully: ", email);
     return { user };
@@ -32,26 +36,48 @@ async function register(req) {
   }
 }
 
-
 async function registerAdmin(req) {
-  const { firstname, lastname, email, restaurant_name, location, role, password } = req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    restaurant_name,
+    location,
+    role,
+    password,
+  } = req.body;
   const password_hash = await bcrypt.hash(password, 8);
   const sql =
     "INSERT INTO user (firstname, lastname, email, restaurant_name, location, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let user = await new Promise((resolve, reject) => {
-      db.run(sql, [firstname, lastname, email, restaurant_name, location, role, password_hash], function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-            algorithm: "HS512",
-            expiresIn: "1 week",
-          });
-          resolve({ token, email: email });
+      db.run(
+        sql,
+        [
+          firstname,
+          lastname,
+          email,
+          restaurant_name,
+          location,
+          role,
+          password_hash,
+        ],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+              algorithm: "HS512",
+              expiresIn: "1 week",
+            });
+            resolve({
+              token,
+              user: user
+            });
+          }
         }
-      });
+      );
     });
     console.log("User registered successfully: ", email);
     return { user };
@@ -60,8 +86,6 @@ async function registerAdmin(req) {
     throw new Error("Email already in use");
   }
 }
-
-
 
 async function login(req) {
   const { email, password } = req.body;
@@ -83,8 +107,7 @@ async function login(req) {
         });
         return {
           token,
-          email: email,
-          role: rows[0].role
+          rows: rows
         };
       } else {
         throw new Error("Invalid email or password!");
@@ -104,13 +127,13 @@ async function verify(req, res, next) {
     let token = authorization[1];
     //console.log(token);
     if (type !== "Bearer") {
-      return res.status(401).send({error: "Cant authorize"});
+      return res.status(401).send({ error: "Cant authorize" });
     } else {
       req.jwt = jwt.verify(token, process.env.JWT_SECRET);
       return next();
     }
   } catch (error) {
-    return res.status(401).send({error: "Cant authorize"});
+    return res.status(401).send({ error: "Cant authorize" });
   }
 }
 
