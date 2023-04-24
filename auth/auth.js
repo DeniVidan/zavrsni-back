@@ -23,7 +23,13 @@ async function register(req) {
               algorithm: "HS512",
               expiresIn: "1 week",
             });
-            resolve({ token, email: email });
+            resolve({ 
+              token, 
+              firstname: firstname,
+              lastname: lastname,
+              email: email,
+              role: role,
+            });
           }
         }
       );
@@ -73,13 +79,14 @@ async function registerAdmin(req) {
             });
             resolve({
               token,
-              user: user
+              email: user.email,
+              firstname: user.firstname
             });
           }
         }
       );
     });
-    console.log("User registered successfully: ", email);
+    console.log("User registered successfully: ", user);
     return { user };
   } catch (error) {
     console.error(error.message);
@@ -107,7 +114,13 @@ async function login(req) {
         });
         return {
           token,
-          rows: rows
+          id: rows[0].id,
+          firstname: rows[0].firstname,
+          lastname: rows[0].lastname,
+          email: rows[0].email,
+          restaurant_name: rows[0].restaurant_name,
+          location: rows[0].location,
+          role: rows[0].role,
         };
       } else {
         throw new Error("Invalid email or password!");

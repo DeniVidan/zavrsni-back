@@ -24,10 +24,20 @@ router.post("/auth/user", user.authUser());
 
 router.get("/restaurant/tables", [verify], user.getRestaurantTables())
 
+router.get("/restaurant/termins", [verify], user.getRestaurantTermins())
+
 router.post("/create/tables", [verify], user.createTable());
 
 router.post("/create/termin", [verify], user.createTermin());
     
+router.put("/rename/tables", [verify], user.renameTable());
+
+router.delete("/delete/termin", [verify], user.deleteTermin());
+
+router.delete("/delete/table", [verify], user.deleteTable());
+
+router.put("/edit/user", [verify], user.editUser());
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");

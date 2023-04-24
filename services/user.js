@@ -1,15 +1,16 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables } = require("../services/select")
-const { createTable, createTermin } = require("../services/insert")
+const { getRestaurantTables, getRestaurantTermins } = require("../services/select")
+const { createTable, createTermin, renameTable, editUser } = require("../services/insert")
+const { deleteTermin, deleteTable } = require("../services/delete")
 
 exports.addUser = function () {
   return async function (req, res) {
     //console.log("u user.js sam")
     try {
       let result = await register(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.send({result, msg: "User successfully created"});
     } catch (err) {
       console.error(err.message);
@@ -24,7 +25,7 @@ exports.addAdmin = function () {
     //console.log("u user.js sam")
     try {
       let result = await registerAdmin(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.send({result, msg: "User successfully logged in"});
     } catch (err) {
       console.error(err.message);
@@ -38,7 +39,7 @@ exports.authUser = function () {
   return async function (req, res) {
     try {
       let result = await login(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.status(200).send({result, msg: "User successfully logged"});
     } catch (err) {
       console.error(err.message);
@@ -50,7 +51,7 @@ exports.authUser = function () {
 
 exports.getUser = function () {
   return async (req, res) => {
-    console.log("dohvati usere");
+    //console.log("dohvati usere");
     try {
       const rows = await new Promise((resolve, reject) => {
         db.all("SELECT * FROM user", [], (err, rows) => {
@@ -71,7 +72,7 @@ exports.getRestaurantTables = function () {
   return async function (req, res) {
     try {
       let result = await getRestaurantTables(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.status(200).send({result, msg: "Restaurant tables retrieved"});
     } catch (err) {
       console.error(err.message);
@@ -81,11 +82,26 @@ exports.getRestaurantTables = function () {
   };
 };
 
+exports.getRestaurantTermins = function () {
+  return async function (req, res) {
+    try {
+      let result = await getRestaurantTermins(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant termins retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant termins error" });
+    }
+  };
+};
+
+
 exports.createTable = function () {
   return async function (req, res) {
     try {
       let result = await createTable(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.status(200).send({result, msg: "Restaurant tables created"});
     } catch (err) {
       console.error(err.message);
@@ -99,7 +115,7 @@ exports.createTermin = function () {
   return async function (req, res) {
     try {
       let result = await createTermin(req)
-      console.log("result: ", result)
+      //console.log("result: ", result)
       res.status(200).send({result, msg: "Restaurant termin created"});
     } catch (err) {
       console.error(err.message);
@@ -109,6 +125,61 @@ exports.createTermin = function () {
   };
 };
 
+exports.renameTable = function () {
+  return async function (req, res) {
+    try {
+      let result = await renameTable(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Tables renamed successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant table can't rename error" });
+    }
+  };
+};
+
+
+exports.deleteTermin = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteTermin(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Termin deleted successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant termin can't be deleted error" });
+    }
+  };
+};
+
+exports.deleteTable = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteTable(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Table deleted successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant table can't be deleted error" });
+    }
+  };
+};
+exports.editUser = function () {
+  return async function (req, res) {
+    try {
+      let result = await editUser(req, res)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "USer updated successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "User can't update error" });
+    }
+  };
+};
 
 
 /* async function addUser(firstname, lastname, email, password) {} */
