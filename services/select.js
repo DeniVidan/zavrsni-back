@@ -6,7 +6,7 @@ async function getRestaurantTables(req) {
     
     try {
       const { id } = req.query
-      console.log("daj mi id: ", id)
+      console.log("daj mi id sad: ", id)
       const rows = await new Promise((resolve, reject) => {
         db.all(`SELECT user.*, tables.*
                     FROM user
@@ -51,7 +51,7 @@ async function getRestaurantTables(req) {
     
     try {
       const { id } = req.query
-      console.log("daj mi id: ", id)
+      console.log("daj mi id odmah: ", id)
       const rows = await new Promise((resolve, reject) => {
         db.all(`SELECT user.*, termin.*
                     FROM user
@@ -72,4 +72,38 @@ async function getRestaurantTables(req) {
   }
 
 
-module.exports = { getRestaurantTables, getRestaurantTermins, getUser }
+  async function getRestaurants() {
+
+    try {
+      const rows = await new Promise((resolve, reject) => {
+        db.all("SELECT * FROM user WHERE role = 'admin'", [], (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        });
+      });
+      console.log("restorani: ", rows);
+      
+      return rows
+    } catch (err) {
+      console.error(err.message);
+    }
+}
+
+async function getRestaurant(req) {
+  const { id } = req.query
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all("SELECT * FROM user WHERE id = ?", [id], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+    console.log("restoran: ", rows);
+    
+    return rows
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+module.exports = { getRestaurantTables, getRestaurantTermins, getUser, getRestaurants, getRestaurant }

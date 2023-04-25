@@ -1,7 +1,7 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins } = require("../services/select")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant } = require("../services/select")
 const { createTable, createTermin, renameTable, editUser } = require("../services/insert")
 const { deleteTermin, deleteTable } = require("../services/delete")
 
@@ -180,6 +180,34 @@ exports.editUser = function () {
     }
   };
 };
+
+exports.getRestaurants = function () {
+  return async function (req, res) {
+    try {
+      let result = await getRestaurants()
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurants get successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurants can't get error" });
+    }
+  };
+};
+exports.getRestaurant = function () {
+  return async function (req, res) {
+    try {
+      let result = await getRestaurant(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurants get successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurants can't get error" });
+    }
+  };
+};
+
 
 
 /* async function addUser(firstname, lastname, email, password) {} */

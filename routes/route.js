@@ -38,6 +38,10 @@ router.delete("/delete/table", [verify], user.deleteTable());
 
 router.put("/edit/user", [verify], user.editUser());
 
+router.get("/restaurants", [verify], user.getRestaurants());
+
+router.get("/restaurant", [verify], user.getRestaurant());
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");
