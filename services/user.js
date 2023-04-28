@@ -1,7 +1,7 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant } = require("../services/select")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables } = require("../services/select")
 const { createTable, createTermin, renameTable, editUser } = require("../services/insert")
 const { deleteTermin, deleteTable } = require("../services/delete")
 
@@ -207,6 +207,35 @@ exports.getRestaurant = function () {
     }
   };
 };
+
+exports.getAllTablesAndReservations = function () {
+  return async function (req, res) {
+    try {
+      let result = await getAllTablesAndReservations(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant all tables and reservations retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
+    }
+  };
+};
+
+exports.groupTables = function () {
+  return async function (req, res) {
+    try {
+      let result = await groupTables(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Grouped tables retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "group table error" });
+    }
+  };
+};
+
 
 
 

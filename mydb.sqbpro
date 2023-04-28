@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/deniv/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2289"/><column_width id="4" width="0"/></tab_structure><tab_browse><current_table name="0,0:"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">/*SELECT user.id, user.firstname, user.lastname,user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
+		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
+		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN tables ON user.id = tables.restaurant_id
+	INNER JOIN termin ON user.id = termin.restaurant_id
+	LEFT JOIN reservations ON termin.id = reservations.termin_id
+	WHERE user.id = 1
+	*/
+	
+--INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id) VALUES (1, 2, 12, 11);
+
+/**/
+
+/*SELECT user.id, user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
+		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
+		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN tables ON user.id = tables.restaurant_id
+	LEFT JOIN reservations ON tables.id = reservations.table_id
+	LEFT JOIN termin ON reservations.termin_id = termin.id
+	WHERE user.id = 1
+	ORDER BY tables.table_size ASC*/        --AND reservations.id IS NULL
+	
+	
+	
+/* --GET ALL RESERVATIONS FROM ONE RESTAURANT
+SELECT user.email, reservations.id as reservation_id, reservations.user_id, reservations.table_id, reservations.termin_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN reservations ON user.id = reservations.restaurant_id
+	LEFT JOIN termin ON reservations.termin_id = termin.id
+	WHERE reservations.restaurant_id = 1*/
+
+
+/* --GROUP ALL TABLES
+	SELECT tables.table_size
+	FROM tables
+    WHERE tables.restaurant_id = 1
+    GROUP by tables.table_size*/
+	
+	
+ -- GET ALL TABLES TERMINS AND RESERVATIONS FROM ONE RESTAURANT 
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+		termin.id as termin_id, termin.start_time, termin.end_time,
+		reservations.id as reservation_id, reservations.user_id,
+		user.email, user.restaurant_name
+	FROM tables
+    LEFT JOIN termin ON tables.restaurant_id = termin.restaurant_id
+    LEFT JOIN reservations ON termin.id = reservations.termin_id AND tables.id = reservations.table_id
+	LEFT JOIN user ON tables.restaurant_id = user.id
+    WHERE tables.restaurant_id = 1
+    ORDER BY tables.table_size ASC
+	
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

@@ -42,6 +42,10 @@ router.get("/restaurants", [verify], user.getRestaurants());
 
 router.get("/restaurant", [verify], user.getRestaurant());
 
+router.get("/restaurant/reservations", [verify], user.getAllTablesAndReservations());
+
+router.get("/group/tables", [verify], user.groupTables());
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");
