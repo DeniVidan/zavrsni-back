@@ -1,8 +1,8 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables } = require("../services/select")
-const { createTable, createTermin, renameTable, editUser } = require("../services/insert")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating } = require("../services/select")
+const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant } = require("../services/insert")
 const { deleteTermin, deleteTable } = require("../services/delete")
 
 exports.addUser = function () {
@@ -232,6 +232,63 @@ exports.groupTables = function () {
       console.error(err.message);
       // ovako ne šalje message
       res.status(500).json({ err: "group table error" });
+    }
+  };
+};
+
+
+exports.reserveTable = function () {
+  return async function (req, res) {
+    try {
+      let result = await reserveTable(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Table reserved successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Restaurant table can't reserve error" });
+    }
+  };
+};
+
+exports.getAllRestaurantsReservations = function () {
+  return async function (req, res) {
+    try {
+      let result = await getAllRestaurantsReservations(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant all reservations retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
+    }
+  };
+};
+
+exports.rateRestaurant = function () {
+  return async function (req, res) {
+    try {
+      let result = await rateRestaurant(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant ratings posted"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
+    }
+  };
+};
+
+exports.getRestaurantRating = function () {
+  return async function (req, res) {
+    try {
+      let result = await getRestaurantRating(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
     }
   };
 };

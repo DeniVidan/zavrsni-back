@@ -46,6 +46,14 @@ router.get("/restaurant/reservations", [verify], user.getAllTablesAndReservation
 
 router.get("/group/tables", [verify], user.groupTables());
 
+router.post("/make/reservation", [verify], user.reserveTable());
+
+router.get("/reservations", [verify], user.getAllRestaurantsReservations());
+
+router.post("/rate", [verify], user.rateRestaurant());
+
+router.get("/restaurant/rating", [verify], user.getRestaurantRating());
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");

@@ -205,4 +205,67 @@ async function editUser(req, res) {
     return { message: "Server error" };
   }
 }
-module.exports = { createTable, createTermin, renameTable, editUser };
+
+async function reserveTable(req) {
+  const { restaurant_id, user_id, table_id, termin_id, day, month, year } = req.body;
+  console.log(
+    "restaurant_id, user_id, table_id, termin_id: ",
+    restaurant_id,
+    user_id,
+    table_id,
+    termin_id,
+    day, month, year
+  );
+  const sql = "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  try {
+    let reservation = await new Promise((resolve, reject) => {
+      let rows = db.run(sql, [restaurant_id, user_id, table_id, termin_id, day, month, year], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            rows
+          });
+        }
+      });
+    });
+    console.log("Table reserved successfully: ", reservation);
+    return { reservation };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+async function rateRestaurant(req) {
+  const { restaurant_id, user_id, rate } = req.body;
+  console.log(
+    "restaurant_id, user_id, rate: ",
+    restaurant_id,
+    user_id,
+    rate
+  );
+  const sql = "INSERT INTO restaurant_rating (restaurant_id, user_id, rate) VALUES (?, ?, ?)";
+
+  try {
+    let rating = await new Promise((resolve, reject) => {
+      let rows = db.run(sql, [restaurant_id, user_id, rate], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            rows
+          });
+        }
+      });
+    });
+    console.log("Restaurant rated successfully: ", rating);
+    return { rating };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant };

@@ -1,54 +1,158 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/deniv/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2289"/><column_width id="4" width="0"/></tab_structure><tab_browse><current_table name="0,0:"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">/*SELECT user.id, user.firstname, user.lastname,user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
-		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
-		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/deniv/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="9579"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,17:mainrestaurant_rating"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="reservations" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="6" mode="1"/></sort><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="56"/><column index="4" value="60"/><column index="5" value="69"/><column index="6" value="53"/><column index="7" value="49"/><column index="8" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="restaurant_rating" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="56"/><column index="4" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="tables" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="84"/><column index="4" value="74"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="termin" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="77"/><column index="4" value="68"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="70"/><column index="3" value="67"/><column index="4" value="113"/><column index="5" value="122"/><column index="6" value="59"/><column index="7" value="42"/><column index="8" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*	
+CREATE VIEW reservations_users AS
+	SELECT user.*, reservations.id as reservation_id, reservations.restaurant_id, reservations.user_id, reservations.table_id, reservations.termin_id
+		FROM  user
+		INNER JOIN reservations ON user.id = reservations.user_id
+		
+	
+
+DROP VIEW reservations_users
+
+SELECT *
+	FROM reservations_users
+*/
+/**/
+SELECT user.email as restaurant_email, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.table_id, reservations_users.termin_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN reservations_users ON user.id = reservations_users.restaurant_id
+	LEFT JOIN termin ON reservations_users.termin_id = termin.id
+	WHERE reservations_users.restaurant_id = 1</sql><sql name="SQL 1">/*SELECT user.id, user.firstname, user.lastname,user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
+		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
+		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN tables ON user.id = tables.restaurant_id
+	INNER JOIN termin ON user.id = termin.restaurant_id
+	LEFT JOIN reservations ON termin.id = reservations.termin_id
+	WHERE user.id = 1
+	*/
+	
+--INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id) VALUES (1, 2, 12, 11);
+
+/**/
+
+/*SELECT user.id, user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
+		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
+		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN tables ON user.id = tables.restaurant_id
+	LEFT JOIN reservations ON tables.id = reservations.table_id
+	LEFT JOIN termin ON reservations.termin_id = termin.id
+	WHERE user.id = 1
+	ORDER BY tables.table_size ASC*/        --AND reservations.id IS NULL
+	
+	
+	
+/* --GET ALL RESERVATIONS FROM ONE RESTAURANT
+SELECT user.email, reservations.id as reservation_id, reservations.user_id, reservations.table_id, reservations.termin_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN reservations ON user.id = reservations.restaurant_id
+	LEFT JOIN termin ON reservations.termin_id = termin.id
+	WHERE reservations.restaurant_id = 1*/
+
+
+/* --GROUP ALL TABLES
+	SELECT tables.table_size
+	FROM tables
+    WHERE tables.restaurant_id = 1
+    GROUP by tables.table_size*/
+	
+	
+ -- GET ALL TABLES TERMINS AND RESERVATIONS FROM ONE RESTAURANT 
+/*
+ SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+		termin.id as termin_id, termin.start_time, termin.end_time,
+		reservations.id as reservation_id, reservations.user_id,
+		user.email, user.restaurant_name
+	FROM tables
+    LEFT JOIN termin ON tables.restaurant_id = termin.restaurant_id
+    LEFT JOIN reservations ON termin.id = reservations.termin_id AND tables.id = reservations.table_id
+	LEFT JOIN user ON tables.restaurant_id = user.id
+    WHERE tables.restaurant_id = 1
+    ORDER BY tables.table_size ASC
+	*/
+	
+-- GET ALL RESTAURANTS AND USERS COMBINED RESERVATIONS
+
+--VIEW OF USER AND RESTAURANT RESERVATION
+/*
+CREATE VIEW reservations_users AS
+	SELECT user.*, reservations.id as reservation_id, reservations.restaurant_id, reservations.user_id, reservations.table_id, reservations.termin_id, reservations.day, reservations.month, reservations.year
+		FROM  user
+		INNER JOIN reservations ON user.id = reservations.user_id
+
+DROP VIEW reservations_users*/
+/*	SELECT *
+	FROM reservations_users
+*/
+
+
+/*
+SELECT user.email as restaurant_email, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.firstname, reservations_users.lastname, reservations_users.table_id, reservations_users.termin_id, termin.start_time, termin.end_time
+	FROM user
+	LEFT JOIN reservations_users ON user.id = reservations_users.restaurant_id
+	LEFT JOIN termin ON reservations_users.termin_id = termin.id
+	WHERE reservations_users.restaurant_id = 1
+	
+	
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        reservations.id as reservation_id, reservations.user_id, reservations.day, reservations.month, reservations.year,
+        user.email, user.restaurant_name
+      FROM tables
+        LEFT JOIN termin ON tables.restaurant_id = termin.restaurant_id
+        LEFT JOIN reservations ON termin.id = reservations.termin_id AND tables.id = reservations.table_id
+      LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = 1 
+        ORDER BY tables.table_size ASC
+*/		
+		
+/*
+
+		
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+	termin.id as termin_id, termin.start_time, termin.end_time,
+	user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+	FROM termin
+		LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+		LEFT JOIN user ON tables.restaurant_id = user.id
+		WHERE tables.restaurant_id = 1
+		
+EXCEPT
+
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+      FROM termin
+        LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+		LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = 1 AND reservations.day = 3
+		ORDER BY tables.table_size
+*/
+
+
+SELECT user.restaurant_name, user.email, restaurant_rating.*, (COUNT(restaurant_rating.rate)) as rate
 	FROM user
-	LEFT JOIN tables ON user.id = tables.restaurant_id
-	INNER JOIN termin ON user.id = termin.restaurant_id
-	LEFT JOIN reservations ON termin.id = reservations.termin_id
-	WHERE user.id = 1
-	*/
+	LEFT JOIN restaurant_rating ON user.id = restaurant_rating.restaurant_id
+	WHERE user.role = 'admin'
 	
---INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id) VALUES (1, 2, 12, 11);
-
-/**/
-
-/*SELECT user.id, user.email, user.restaurant_name, tables.id as table_id, tables.restaurant_id, tables.table_name,tables.table_size, 
-		reservations.id as reservation_id, reservations.restaurant_id, reservations.table_id, reservations.user_id, reservations.termin_id, 
-		termin.id as termin_id, termin.restaurant_id, termin.start_time, termin.end_time
-	FROM user
-	LEFT JOIN tables ON user.id = tables.restaurant_id
-	LEFT JOIN reservations ON tables.id = reservations.table_id
-	LEFT JOIN termin ON reservations.termin_id = termin.id
-	WHERE user.id = 1
-	ORDER BY tables.table_size ASC*/        --AND reservations.id IS NULL
-	
-	
-	
-/* --GET ALL RESERVATIONS FROM ONE RESTAURANT
-SELECT user.email, reservations.id as reservation_id, reservations.user_id, reservations.table_id, reservations.termin_id, termin.start_time, termin.end_time
-	FROM user
-	LEFT JOIN reservations ON user.id = reservations.restaurant_id
-	LEFT JOIN termin ON reservations.termin_id = termin.id
-	WHERE reservations.restaurant_id = 1*/
 
 
-/* --GROUP ALL TABLES
-	SELECT tables.table_size
-	FROM tables
-    WHERE tables.restaurant_id = 1
-    GROUP by tables.table_size*/
-	
-	
- -- GET ALL TABLES TERMINS AND RESERVATIONS FROM ONE RESTAURANT 
-SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
-		termin.id as termin_id, termin.start_time, termin.end_time,
-		reservations.id as reservation_id, reservations.user_id,
-		user.email, user.restaurant_name
-	FROM tables
-    LEFT JOIN termin ON tables.restaurant_id = termin.restaurant_id
-    LEFT JOIN reservations ON termin.id = reservations.termin_id AND tables.id = reservations.table_id
-	LEFT JOIN user ON tables.restaurant_id = user.id
-    WHERE tables.restaurant_id = 1
-    ORDER BY tables.table_size ASC
-	
-</sql><current_tab id="0"/></tab_sql></sqlb_project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+</sql><current_tab id="1"/></tab_sql></sqlb_project>

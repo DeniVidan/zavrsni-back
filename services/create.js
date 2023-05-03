@@ -67,6 +67,9 @@ db.serialize(() => {
       user_id INTEGER NOT NULL,
       table_id INTEGER NOT NULL,
       termin_id INTEGER NOT NULL,
+      day INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      year INTEGER NOT NULL,
       FOREIGN KEY (restaurant_id) REFERENCES user(id),
       FOREIGN KEY (user_id) REFERENCES user(id),
       FOREIGN KEY (table_id) REFERENCES tables(id),
@@ -76,6 +79,24 @@ db.serialize(() => {
     (err) => {
       if (err) console.error(err.message);
       else console.log("Reservations table created successfully!");
+    }
+  );
+
+
+  db.run(
+    `
+    CREATE TABLE IF NOT EXISTS restaurant_rating (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      restaurant_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      rate REAL NOT NULL,
+      FOREIGN KEY (restaurant_id) REFERENCES user(id),
+      FOREIGN KEY (user_id) REFERENCES user(id)
+    )
+  `,
+    (err) => {
+      if (err) console.error(err.message);
+      else console.log("Rating table created successfully!");
     }
   );
 });
