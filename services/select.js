@@ -76,7 +76,7 @@ async function getRestaurants() {
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, AVG(r.rate) AS avg_rate
+        `SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, ROUND(AVG(r.rate), 1) AS avg_rate
         FROM user u
         LEFT JOIN rates r ON u.id = r.restaurant_id
         WHERE u.role = 'admin'
