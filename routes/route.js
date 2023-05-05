@@ -54,6 +54,10 @@ router.post("/rate", [verify], user.rateRestaurant());
 
 router.get("/restaurant/rating", [verify], user.getRestaurantRating());
 
+router.get("/user/restaurant/rating"), [verify], user.getUserRestaurantRating()
+
+router.get("/proba"), [verify], user.getUserRate()
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");

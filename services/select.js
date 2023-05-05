@@ -76,12 +76,11 @@ async function getRestaurants() {
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT user.id as restaurant_id, user.firstname, user.lastname, user.email, user.restaurant_name, user.location, user.role,
-                ROUND(AVG(restaurant_rating.rate), 2) as avg_rating
-          FROM user
-          LEFT JOIN restaurant_rating ON user.id = restaurant_rating.restaurant_id
-          WHERE user.role = 'admin'
-          GROUP BY restaurant_rating.restaurant_id
+        `SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, AVG(r.rate) AS avg_rate
+        FROM user u
+        LEFT JOIN rates r ON u.id = r.restaurant_id
+        WHERE u.role = 'admin'
+        GROUP BY u.email      
         `,
         [],
         (err, rows) => {
@@ -90,7 +89,7 @@ async function getRestaurants() {
         }
       );
     });
-    console.log("restorani: ", rows);
+    console.log("restoranici: ", rows);
 
     return rows;
   } catch (err) {
@@ -108,6 +107,29 @@ async function getRestaurant(req) {
       });
     });
     console.log("restoran: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+async function getUserRate(req) {
+  const { restaurant_id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT *
+      FROM restaurant_rating rr
+      WHERE rr.restaurant_id = ?`,
+        [restaurant_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+    console.log("restoran rate: ", rows);
 
     return rows;
   } catch (err) {
@@ -214,15 +236,19 @@ async function getAllRestaurantsReservations(req) {
 
 async function getRestaurantRating(req) {
   try {
-    const { restaurant_id } = req.query;
-    console.log("daj mi id sad za rating: ", restaurant_id);
+    const { user_id, restaurant_id } = req.query;
+    console.log("daj mi id sad za rating: ", restaurant_id, user_id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT user.restaurant_name, user.email, restaurant_rating.*, ((SUM(restaurant_rating.rate))/(COUNT(restaurant_rating.rate))) as rate
-        FROM user
-        LEFT JOIN restaurant_rating ON user.id = restaurant_rating.restaurant_id
-        WHERE user.role = 'admin' AND user.id = ?`,
-        [restaurant_id],
+        `SELECT u.id, u.firstname, u.lastname, u.email, u.restaurant_name, u.role,r.user_id, r.rate as rate
+        FROM user u
+        LEFT JOIN rates r ON u.id = r.restaurant_id
+        WHERE u.role = 'admin' AND u.id = ? AND r.user_id = ?
+        GROUP BY u.email
+      
+      
+    `,
+        [restaurant_id, user_id],
         (err, rows) => {
           if (err) reject(err);
           else {
@@ -241,20 +267,24 @@ async function getRestaurantRating(req) {
 
 async function getUserRestaurantRating(req) {
   try {
-    const { user_id, restaurant_id } = req.query;
-    console.log("daj mi id sad za rating: ", user_id, restaurant_id);
+    const { user_id } = req.query;
+    console.log("daj mi id sad za rating: ", user_id);
     const rows = await new Promise((resolve, reject) => {
-      db.all(`SELECT user.id as user_id, user.firstname, user.lastname, user.email, user.role, restaurant_rating.*
-                FROM user
-                LEFT JOIN restaurant_rating ON user.id = restaurant_rating.user_id
-                WHERE user.id = ? AND restaurant_rating.restaurant_id = ?`, [user_id, restaurant_id], (err, rows) => {
-        if (err) reject(err);
-        else {
-          resolve(rows);
+      db.all(
+        `SELECT user.restaurant_name, user.email, restaurant_rating.*, ((SUM(restaurant_rating.rate))/(COUNT(restaurant_rating.rate))) as rate
+        FROM user
+        LEFT JOIN restaurant_rating ON user.id = restaurant_rating.restaurant_id
+        WHERE user.role = 'admin' AND user.id = ?`,
+        [user_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else {
+            resolve(rows);
+          }
         }
-      });
+      );
     });
-    //console.log("daj mi row: ", rows);
+    console.log("ČA REJTING: ", rows);
     return rows;
   } catch (err) {
     console.log(err);
@@ -273,4 +303,5 @@ module.exports = {
   getAllRestaurantsReservations,
   getRestaurantRating,
   getUserRestaurantRating,
+  getUserRate,
 };

@@ -1,7 +1,7 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating } = require("../services/select")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate } = require("../services/select")
 const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant } = require("../services/insert")
 const { deleteTermin, deleteTable } = require("../services/delete")
 
@@ -293,7 +293,34 @@ exports.getRestaurantRating = function () {
   };
 };
 
+exports.getUserRestaurantRating = function () {
+  return async function (req, res) {
+    try {
+      let result = await getUserRestaurantRating(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
+    }
+  };
+};
 
+
+exports.getUserRate = function () {
+  return async function (req, res) {
+    try {
+      let result = await getUserRate(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reservations error" });
+    }
+  };
+};
 
 
 /* async function addUser(firstname, lastname, email, password) {} */
