@@ -13,7 +13,8 @@ db.serialize(() => {
       restaurant_name TEXT,
       location TEXT,
       role TEXT NOT NULL,
-      password TEXT NOT NULL
+      password TEXT NOT NULL,
+      image TEXT NOT NULL DEFAULT "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
   )
 `,
     (err) => {
@@ -99,6 +100,8 @@ db.serialize(() => {
       else console.log("Rating table created successfully!");
     }
   );
+
+
 });
 
 
