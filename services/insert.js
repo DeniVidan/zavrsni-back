@@ -268,4 +268,71 @@ async function rateRestaurant(req) {
   }
 }
 
-module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant };
+
+async function changeProfileImage(req) {
+  const { image, user_id } = req.body;
+  console.log(
+    "image: ",
+    image,
+    user_id
+  );
+  const sql = "UPDATE user SET image = ? WHERE id = ?";
+
+  try {
+    let userImage = await new Promise((resolve, reject) => {
+      db.run(sql, [image, user_id], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            image: image
+          });
+        }
+      });
+    });
+    console.log("Image updated successfully: ", userImage);
+    return { userImage };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+
+async function addToPending(req) {
+  const { restaurant_id, user_id, table_id, termin_id, day, month, year } = req.body;
+  console.log(
+    "restaurant_id, user_id, table_id, termin_id, day, month, year: ",
+    restaurant_id,
+    user_id,
+    table_id,
+    termin_id,
+    day,
+    month,
+    year
+  );
+  const sql = "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  try {
+    let reservation = await new Promise((resolve, reject) => {
+      let rows = db.run(sql, [restaurant_id, user_id, table_id, termin_id, day, month, year], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            rows
+          });
+        }
+      });
+    });
+    console.log("Table added to pening successfully: ", reservation);
+    return { reservation };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+
+
+module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending };

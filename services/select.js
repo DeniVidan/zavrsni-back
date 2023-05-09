@@ -145,10 +145,10 @@ async function getAllTablesAndReservations(req) {
       db.all(
         `SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
         termin.id as termin_id, termin.start_time, termin.end_time,
-        user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+        user.email, user.restaurant_name, pending.id as reservation_id, pending.day
         FROM termin
           LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
-          LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
           LEFT JOIN user ON tables.restaurant_id = user.id
           WHERE tables.restaurant_id = ?
           
@@ -156,12 +156,12 @@ async function getAllTablesAndReservations(req) {
       
       SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
               termin.id as termin_id, termin.start_time, termin.end_time,
-              user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+              user.email, user.restaurant_name, pending.id as reservation_id, pending.day
             FROM termin
               LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
-          LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
           LEFT JOIN user ON tables.restaurant_id = user.id
-              WHERE tables.restaurant_id = ? AND reservations.day = ?
+              WHERE tables.restaurant_id = ? AND pending.day = ?
               ORDER BY tables.table_size`,
         [id, id, day],
         (err, rows) => {
@@ -247,7 +247,7 @@ async function getRestaurantRating(req) {
         GROUP BY u.email
       
       
-    `,
+        `,
         [restaurant_id, user_id],
         (err, rows) => {
           if (err) reject(err);
@@ -292,6 +292,55 @@ async function getUserRestaurantRating(req) {
   }
 }
 
+async function getProfileImage(req) {
+  const { user_id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT user.image
+        FROM user
+        WHERE user.id = ?`,
+        [user_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+    console.log("user image: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+async function getPending(req) {
+  const { restaurant_id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT pu.id as user_id, pu.firstname, pu.lastname, pu.email, pu.pending_id, pu.restaurant_id, pu.table_id, pu.termin_id, pu.day, pu.month, pu. year,
+        ta.table_name, ta.table_size, te.start_time, te.end_time
+      FROM pending_users pu
+      LEFT JOIN tables ta ON pu.table_id = ta.id
+      LEFT JOIN termin te ON pu.termin_id = te.id
+      WHERE pu.restaurant_id = ?`,
+        [restaurant_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+    console.log("user penfing: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
 module.exports = {
   getRestaurantTables,
   getRestaurantTermins,
@@ -304,4 +353,6 @@ module.exports = {
   getRestaurantRating,
   getUserRestaurantRating,
   getUserRate,
+  getProfileImage,
+  getPending,
 };

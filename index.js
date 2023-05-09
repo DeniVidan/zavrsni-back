@@ -12,5 +12,5 @@ app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use("/api", route)
 
-const port = 3000
+const port = 3030
 app.listen(port, ()=>{console.log(`Server is running on port ${port}`)});

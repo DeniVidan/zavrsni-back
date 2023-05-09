@@ -50,9 +50,31 @@ async function deleteTermin(req) {
     }
   }
 
+  async function deletePending(req) {
+    const { id } = req.query;
+    console.log("id pending: ", id);
+    const sql =
+      "DELETE FROM pending WHERE id = ?";
+  
+    try {
+      let pending = await new Promise((resolve, reject) => {
+        db.run(sql, [id], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(pending);
+          }
+        });
+      });
+      console.log("Pending deleted successfully: ", pending);
+      return { pending };
+    } catch (err) {
+      console.log(err)
+      throw new Error("Something went wrong!");
+    }
+  }
 
 
 
 
-
-module.exports = { deleteTermin, deleteTable }
+module.exports = { deleteTermin, deleteTable, deletePending }

@@ -101,6 +101,29 @@ db.serialize(() => {
     }
   );
 
+  db.run(
+    `
+    CREATE TABLE IF NOT EXISTS pending (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      restaurant_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      table_id INTEGER NOT NULL,
+      termin_id INTEGER NOT NULL,
+      day INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      year INTEGER NOT NULL,
+      FOREIGN KEY (restaurant_id) REFERENCES user(id),
+      FOREIGN KEY (user_id) REFERENCES user(id),
+      FOREIGN KEY (table_id) REFERENCES tables(id),
+      FOREIGN KEY (termin_id) REFERENCES termin(id)
+    )
+  `,
+    (err) => {
+      if (err) console.error(err.message);
+      else console.log("Pending table created successfully!");
+    }
+  );
+
 
 });
 

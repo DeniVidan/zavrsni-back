@@ -58,6 +58,16 @@ router.get("/user/restaurant/rating"), [verify], user.getUserRestaurantRating()
 
 router.get("/proba"), [verify], user.getUserRate()
 
+router.put("/change/profile/image", [verify], user.changeProfileImage());
+
+router.get("/get/profile/image", [verify], user.getProfileImage());
+
+router.get("/get/pending", [verify], user.getPending());
+
+router.post("/add/pending", [verify], user.addToPending());
+
+router.delete("/delete/pending", [verify], user.deletePending());
+
 /*   const { firstname, lastname, email, password } = req.body;
   createUserTable();
   console.log("dodaj usera");

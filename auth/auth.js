@@ -77,10 +77,11 @@ async function registerAdmin(req) {
               algorithm: "HS512",
               expiresIn: "1 week",
             });
+            
             resolve({
               token,
-              email: user.email,
-              firstname: user.firstname
+              email: email,
+              firstname: firstname
             });
           }
         }

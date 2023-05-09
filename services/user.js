@@ -1,9 +1,9 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate } = require("../services/select")
-const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant } = require("../services/insert")
-const { deleteTermin, deleteTable } = require("../services/delete")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate, getProfileImage, getPending } = require("../services/select")
+const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending } = require("../services/insert")
+const { deleteTermin, deleteTable, deletePending } = require("../services/delete")
 
 exports.addUser = function () {
   return async function (req, res) {
@@ -322,6 +322,79 @@ exports.getUserRate = function () {
   };
 };
 
+
+exports.changeProfileImage = function () {
+  return async function (req, res) {
+    try {
+      let result = await changeProfileImage(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Image changed successfully!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant change user image error" });
+    }
+  };
+};
+
+
+exports.getProfileImage = function () {
+  return async function (req, res) {
+    try {
+      let result = await getProfileImage(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Image get successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant get user image error" });
+    }
+  };
+};
+
+
+exports.addToPending = function () {
+  return async function (req, res) {
+    try {
+      let result = await addToPending(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "added table to pening successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant add table to pending error" });
+    }
+  };
+};
+
+exports.getPending = function () {
+  return async function (req, res) {
+    try {
+      let result = await getPending(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "get pending successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant get penfing error" });
+    }
+  };
+};
+
+
+exports.deletePending = function () {
+  return async function (req, res) {
+    try {
+      let result = await deletePending(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Delete pending successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant delete penfing error" });
+    }
+  };
+};
 
 /* async function addUser(firstname, lastname, email, password) {} */
 
