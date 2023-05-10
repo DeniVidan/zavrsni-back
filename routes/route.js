@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../services/user"); 
+ 
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
+const createUserTable = require("../services/create");
 const { verify } = require("../auth/auth")
 
 
@@ -63,8 +65,6 @@ router.get("/get/pending", [verify], user.getPending());
 router.post("/add/pending", [verify], user.addToPending());
 
 router.delete("/delete/pending", [verify], user.deletePending());
-
-
 
 
 module.exports = router;
