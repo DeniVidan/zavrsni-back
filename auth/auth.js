@@ -1,6 +1,6 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-import bcrypt from "bcrypt";
+const bcrypt = require('bcrypt');
 var jwt = require("jsonwebtoken");
 require("dotenv").config();
 
