@@ -9,7 +9,7 @@ const route = require('./routes/route.js')
 const app = express()
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: "https://bookrestaurant.netlify.app/"
+    origin: "*"
 }));
 app.use(express.json({ limit: "1mb" }));
 
