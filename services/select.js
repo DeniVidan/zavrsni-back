@@ -76,11 +76,12 @@ async function getRestaurants() {
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, ROUND(AVG(r.rate), 1) AS avg_rate
+        `SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, ROUND(AVG(r.rate), 1) AS avg_rate, ri.description, u.image
         FROM user u
         LEFT JOIN rates r ON u.id = r.restaurant_id
+		    LEFT JOIN restaurant_info ri ON u.id = ri.restaurant_id
         WHERE u.role = 'admin'
-        GROUP BY u.email      
+        GROUP BY u.email
         `,
         [],
         (err, rows) => {
@@ -341,6 +342,54 @@ async function getPending(req) {
   }
 }
 
+async function getUserReservations(req) {
+  const { id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT ru.id, ru.firstname, ru.lastname, ru.email, ru.role, ru.day, ru.month, ru.year, t.start_time, t.end_time, u.restaurant_name, ru.reservation_id
+        FROM reservations_users ru
+        LEFT JOIN termin t ON t.id = ru.termin_id
+        LEFT JOIN user u ON u.id = ru.restaurant_id
+        WHERE ru.id = ?`,
+        [id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+    console.log("user reservations: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+async function getDescription(req) {
+  const { restaurant_id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT ri.description
+          FROM restaurant_info ri
+          WHERE ri.restaurant_id = ?`,
+        [restaurant_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+    console.log("restaurant description: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
 module.exports = {
   getRestaurantTables,
   getRestaurantTermins,
@@ -355,4 +404,6 @@ module.exports = {
   getUserRate,
   getProfileImage,
   getPending,
+  getUserReservations,
+  getDescription,
 };

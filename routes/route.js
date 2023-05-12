@@ -66,5 +66,12 @@ router.post("/add/pending", [verify], user.addToPending());
 
 router.delete("/delete/pending", [verify], user.deletePending());
 
+router.get("/get/user/reservations", [verify], user.getUserReservations());
+
+router.delete("/delete/reservation", [verify], user.deleteReservation());
+
+router.post("/add/description", [verify], user.addDescription());
+
+router.get("/get/description", [verify], user.getDescription());
 
 module.exports = router;

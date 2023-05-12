@@ -74,7 +74,32 @@ async function deleteTermin(req) {
     }
   }
 
+  async function deleteReservation(req) {
+    const { reservation_id } = req.query;
+    console.log("id reservation: ", reservation_id);
+    const sql =
+      "DELETE FROM reservations WHERE id = ?";
+  
+    try {
+      let reservation = await new Promise((resolve, reject) => {
+        db.run(sql, [reservation_id], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(reservation);
+          }
+        });
+      });
+      console.log("Reservation deleted successfully: ", reservation);
+      return { reservation };
+    } catch (err) {
+      console.log(err)
+      throw new Error("Something went wrong!");
+    }
+  }
 
 
 
-module.exports = { deleteTermin, deleteTable, deletePending }
+
+
+module.exports = { deleteTermin, deleteTable, deletePending, deleteReservation }

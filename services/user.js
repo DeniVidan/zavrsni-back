@@ -1,9 +1,9 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate, getProfileImage, getPending } = require("../services/select")
-const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending } = require("../services/insert")
-const { deleteTermin, deleteTable, deletePending } = require("../services/delete")
+const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate, getProfileImage, getPending, getUserReservations, getDescription } = require("../services/select")
+const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending, addDescription } = require("../services/insert")
+const { deleteTermin, deleteTable, deletePending, deleteReservation } = require("../services/delete")
 
 exports.addUser = function () {
   return async function (req, res) {
@@ -372,7 +372,7 @@ exports.getPending = function () {
     try {
       let result = await getPending(req)
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "get pending successfull!"});
+      res.status(200).send({result, msg: "Get pending successfull!"});
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -395,6 +395,65 @@ exports.deletePending = function () {
     }
   };
 };
+
+exports.getUserReservations = function () {
+  return async function (req, res) {
+    try {
+      let result = await getUserReservations(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Get user reservations successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant get user reservations error" });
+    }
+  };
+};
+
+exports.deleteReservation = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteReservation(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Delete reservation successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant delete user reservation error" });
+    }
+  };
+};
+
+
+exports.addDescription = function () {
+  return async function (req, res) {
+    try {
+      let result = await addDescription(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Descrition added successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant add description error" });
+    }
+  };
+};
+
+
+exports.getDescription = function () {
+  return async function (req, res) {
+    try {
+      let result = await getDescription(req)
+      //console.log("result: ", result)
+      res.status(200).send({result, msg: "Descrition get successfull!"});
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant get description error" });
+    }
+  };
+};
+
 
 /* async function addUser(firstname, lastname, email, password) {} */
 

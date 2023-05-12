@@ -124,6 +124,21 @@ db.serialize(() => {
     }
   );
 
+  db.run(
+    `
+    CREATE TABLE IF NOT EXISTS restaurant_info (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      restaurant_id INTEGER NOT NULL,
+      description TEXT NOT NULL DEFAULT "Pick this restaurant and dine with us !",
+      FOREIGN KEY (restaurant_id) REFERENCES user(id)
+    )
+  `,
+    (err) => {
+      if (err) console.error(err.message);
+      else console.log("Restaurant info table created successfully!");
+    }
+  );
+
 
 });
 

@@ -334,5 +334,35 @@ async function addToPending(req) {
 }
 
 
+async function addDescription(req) {
+  const { restaurant_id, description } = req.body;
+  console.log(
+    "restaurant_id, description: ",
+    restaurant_id,
+    description
+  );
+  const sql = "INSERT INTO restaurant_info (restaurant_id, description) VALUES (?, ?)";
 
-module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending };
+  try {
+    let restaurant_info = await new Promise((resolve, reject) => {
+      let rows = db.run(sql, [restaurant_id, description], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            rows
+          });
+        }
+      });
+    });
+    console.log("Restaurant info added successfully: ", restaurant_info);
+    return { restaurant_info };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+
+
+module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending, addDescription };
