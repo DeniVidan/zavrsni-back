@@ -1,17 +1,50 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-const { register, registerAdmin, login } = require("../auth/auth")
-const { getRestaurantTables, getRestaurantTermins, getRestaurants, getRestaurant, getAllTablesAndReservations, groupTables, getAllRestaurantsReservations, getRestaurantRating, getUserRestaurantRating, getUserRate, getProfileImage, getPending, getUserReservations, getDescription } = require("../services/select")
-const { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending, addDescription } = require("../services/insert")
-const { deleteTermin, deleteTable, deletePending, deleteReservation } = require("../services/delete")
+const { register, registerAdmin, login } = require("../auth/auth");
+const {
+  getRestaurantTables,
+  getRestaurantTermins,
+  getRestaurants,
+  getRestaurant,
+  getAllTablesAndReservations,
+  groupTables,
+  getAllRestaurantsReservations,
+  getRestaurantRating,
+  getUserRestaurantRating,
+  getUserRate,
+  getProfileImage,
+  getPending,
+  getUserReservations,
+  getDescription,
+} = require("../services/select");
+const {
+  createTable,
+  createTermin,
+  renameTable,
+  editUser,
+  reserveTable,
+  rateRestaurant,
+  changeProfileImage,
+  addToPending,
+  addDescription,
+} = require("../services/insert");
+const {
+  deleteTermin,
+  deleteTable,
+  deletePending,
+  deleteReservation,
+} = require("../services/delete");
+
+require("dotenv").config();
+const nodemailer = require("nodemailer");
 
 exports.addUser = function () {
   return async function (req, res) {
     //console.log("u user.js sam")
     try {
-      let result = await register(req)
+      let result = await register(req);
       //console.log("result: ", result)
-      res.send({result, msg: "User successfully created"});
+      res.send({ result, msg: "User successfully created" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -24,9 +57,9 @@ exports.addAdmin = function () {
   return async function (req, res) {
     //console.log("u user.js sam")
     try {
-      let result = await registerAdmin(req)
+      let result = await registerAdmin(req);
       //console.log("result: ", result)
-      res.send({result, msg: "User successfully logged in"});
+      res.send({ result, msg: "User successfully logged in" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -38,9 +71,9 @@ exports.addAdmin = function () {
 exports.authUser = function () {
   return async function (req, res) {
     try {
-      let result = await login(req)
+      let result = await login(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "User successfully logged"});
+      res.status(200).send({ result, msg: "User successfully logged" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -71,9 +104,9 @@ exports.getUser = function () {
 exports.getRestaurantTables = function () {
   return async function (req, res) {
     try {
-      let result = await getRestaurantTables(req)
+      let result = await getRestaurantTables(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant tables retrieved"});
+      res.status(200).send({ result, msg: "Restaurant tables retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -85,9 +118,9 @@ exports.getRestaurantTables = function () {
 exports.getRestaurantTermins = function () {
   return async function (req, res) {
     try {
-      let result = await getRestaurantTermins(req)
+      let result = await getRestaurantTermins(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant termins retrieved"});
+      res.status(200).send({ result, msg: "Restaurant termins retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -96,13 +129,12 @@ exports.getRestaurantTermins = function () {
   };
 };
 
-
 exports.createTable = function () {
   return async function (req, res) {
     try {
-      let result = await createTable(req)
+      let result = await createTable(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant tables created"});
+      res.status(200).send({ result, msg: "Restaurant tables created" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -114,9 +146,9 @@ exports.createTable = function () {
 exports.createTermin = function () {
   return async function (req, res) {
     try {
-      let result = await createTermin(req)
+      let result = await createTermin(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant termin created"});
+      res.status(200).send({ result, msg: "Restaurant termin created" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -128,9 +160,9 @@ exports.createTermin = function () {
 exports.renameTable = function () {
   return async function (req, res) {
     try {
-      let result = await renameTable(req)
+      let result = await renameTable(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Tables renamed successfully!"});
+      res.status(200).send({ result, msg: "Tables renamed successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -139,13 +171,12 @@ exports.renameTable = function () {
   };
 };
 
-
 exports.deleteTermin = function () {
   return async function (req, res) {
     try {
-      let result = await deleteTermin(req)
+      let result = await deleteTermin(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Termin deleted successfully!"});
+      res.status(200).send({ result, msg: "Termin deleted successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -157,9 +188,9 @@ exports.deleteTermin = function () {
 exports.deleteTable = function () {
   return async function (req, res) {
     try {
-      let result = await deleteTable(req)
+      let result = await deleteTable(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Table deleted successfully!"});
+      res.status(200).send({ result, msg: "Table deleted successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -170,9 +201,9 @@ exports.deleteTable = function () {
 exports.editUser = function () {
   return async function (req, res) {
     try {
-      let result = await editUser(req, res)
+      let result = await editUser(req, res);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "USer updated successfully!"});
+      res.status(200).send({ result, msg: "USer updated successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -184,9 +215,9 @@ exports.editUser = function () {
 exports.getRestaurants = function () {
   return async function (req, res) {
     try {
-      let result = await getRestaurants()
+      let result = await getRestaurants();
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurants get successfully!"});
+      res.status(200).send({ result, msg: "Restaurants get successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -197,9 +228,9 @@ exports.getRestaurants = function () {
 exports.getRestaurant = function () {
   return async function (req, res) {
     try {
-      let result = await getRestaurant(req)
+      let result = await getRestaurant(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurants get successfully!"});
+      res.status(200).send({ result, msg: "Restaurants get successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -211,9 +242,14 @@ exports.getRestaurant = function () {
 exports.getAllTablesAndReservations = function () {
   return async function (req, res) {
     try {
-      let result = await getAllTablesAndReservations(req)
+      let result = await getAllTablesAndReservations(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant all tables and reservations retrieved"});
+      res
+        .status(200)
+        .send({
+          result,
+          msg: "Restaurant all tables and reservations retrieved",
+        });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -225,9 +261,9 @@ exports.getAllTablesAndReservations = function () {
 exports.groupTables = function () {
   return async function (req, res) {
     try {
-      let result = await groupTables(req)
+      let result = await groupTables(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Grouped tables retrieved"});
+      res.status(200).send({ result, msg: "Grouped tables retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -236,13 +272,43 @@ exports.groupTables = function () {
   };
 };
 
-
 exports.reserveTable = function () {
   return async function (req, res) {
     try {
-      let result = await reserveTable(req)
+      let result = await reserveTable(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Table reserved successfully!"});
+      res.status(200).send({ result, msg: "Table reserved successfully!" });
+      console.log("EMAIL: ", result.reservation.email)
+      let transporter = nodemailer.createTransport({
+        host: "smtp.zoho.eu",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+          user: process.env.EMAIL, // your email address
+          pass: process.env.PASSWORD, // your email password
+        },
+      });
+      let date = `${result.reservation.month}/${result.reservation.day}/${result.reservation.year}`
+      let start_time = result.reservation.start_time
+      let end_time = result.reservation.end_time
+      let mailOptions = {
+        from: `"Deni" <${process.env.EMAIL}>`, // sender address
+        to: result.reservation.email, // list of receivers
+        subject: 'Reservation accepted ✔', // Subject line
+        text: `Thank you ${result.reservation.firstname} for choosing out restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
+        html: `Thank you <b>${result.reservation.firstname}</b> for choosing out restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b>` // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          return console.log(error);
+      }
+      console.log('Message sent: %s', info.messageId);
+      // Preview only available when sending through an Ethereal account
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  });
+
+
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -254,9 +320,11 @@ exports.reserveTable = function () {
 exports.getAllRestaurantsReservations = function () {
   return async function (req, res) {
     try {
-      let result = await getAllRestaurantsReservations(req)
+      let result = await getAllRestaurantsReservations(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant all reservations retrieved"});
+      res
+        .status(200)
+        .send({ result, msg: "Restaurant all reservations retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -268,9 +336,9 @@ exports.getAllRestaurantsReservations = function () {
 exports.rateRestaurant = function () {
   return async function (req, res) {
     try {
-      let result = await rateRestaurant(req)
+      let result = await rateRestaurant(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant ratings posted"});
+      res.status(200).send({ result, msg: "Restaurant ratings posted" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -282,9 +350,9 @@ exports.rateRestaurant = function () {
 exports.getRestaurantRating = function () {
   return async function (req, res) {
     try {
-      let result = await getRestaurantRating(req)
+      let result = await getRestaurantRating(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+      res.status(200).send({ result, msg: "Restaurant ratings retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -296,9 +364,9 @@ exports.getRestaurantRating = function () {
 exports.getUserRestaurantRating = function () {
   return async function (req, res) {
     try {
-      let result = await getUserRestaurantRating(req)
+      let result = await getUserRestaurantRating(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+      res.status(200).send({ result, msg: "Restaurant ratings retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -306,14 +374,13 @@ exports.getUserRestaurantRating = function () {
     }
   };
 };
-
 
 exports.getUserRate = function () {
   return async function (req, res) {
     try {
-      let result = await getUserRate(req)
+      let result = await getUserRate(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Restaurant ratings retrieved"});
+      res.status(200).send({ result, msg: "Restaurant ratings retrieved" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -322,13 +389,12 @@ exports.getUserRate = function () {
   };
 };
 
-
 exports.changeProfileImage = function () {
   return async function (req, res) {
     try {
-      let result = await changeProfileImage(req)
+      let result = await changeProfileImage(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Image changed successfully!"});
+      res.status(200).send({ result, msg: "Image changed successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -337,13 +403,12 @@ exports.changeProfileImage = function () {
   };
 };
 
-
 exports.getProfileImage = function () {
   return async function (req, res) {
     try {
-      let result = await getProfileImage(req)
+      let result = await getProfileImage(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Image get successfull!"});
+      res.status(200).send({ result, msg: "Image get successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -352,13 +417,14 @@ exports.getProfileImage = function () {
   };
 };
 
-
 exports.addToPending = function () {
   return async function (req, res) {
     try {
-      let result = await addToPending(req)
+      let result = await addToPending(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "added table to pening successfull!"});
+      res
+        .status(200)
+        .send({ result, msg: "added table to pening successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -370,9 +436,9 @@ exports.addToPending = function () {
 exports.getPending = function () {
   return async function (req, res) {
     try {
-      let result = await getPending(req)
+      let result = await getPending(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Get pending successfull!"});
+      res.status(200).send({ result, msg: "Get pending successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -381,13 +447,12 @@ exports.getPending = function () {
   };
 };
 
-
 exports.deletePending = function () {
   return async function (req, res) {
     try {
-      let result = await deletePending(req)
+      let result = await deletePending(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Delete pending successfull!"});
+      res.status(200).send({ result, msg: "Delete pending successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -399,9 +464,11 @@ exports.deletePending = function () {
 exports.getUserReservations = function () {
   return async function (req, res) {
     try {
-      let result = await getUserReservations(req)
+      let result = await getUserReservations(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Get user reservations successfull!"});
+      res
+        .status(200)
+        .send({ result, msg: "Get user reservations successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -413,9 +480,9 @@ exports.getUserReservations = function () {
 exports.deleteReservation = function () {
   return async function (req, res) {
     try {
-      let result = await deleteReservation(req)
+      let result = await deleteReservation(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Delete reservation successfull!"});
+      res.status(200).send({ result, msg: "Delete reservation successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -424,13 +491,12 @@ exports.deleteReservation = function () {
   };
 };
 
-
 exports.addDescription = function () {
   return async function (req, res) {
     try {
-      let result = await addDescription(req)
+      let result = await addDescription(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Descrition added successfull!"});
+      res.status(200).send({ result, msg: "Descrition added successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -439,13 +505,12 @@ exports.addDescription = function () {
   };
 };
 
-
 exports.getDescription = function () {
   return async function (req, res) {
     try {
-      let result = await getDescription(req)
+      let result = await getDescription(req);
       //console.log("result: ", result)
-      res.status(200).send({result, msg: "Descrition get successfull!"});
+      res.status(200).send({ result, msg: "Descrition get successfull!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -453,7 +518,6 @@ exports.getDescription = function () {
     }
   };
 };
-
 
 /* async function addUser(firstname, lastname, email, password) {} */
 

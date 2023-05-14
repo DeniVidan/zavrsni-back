@@ -144,27 +144,39 @@ async function getAllTablesAndReservations(req) {
     console.log("daj mi id sad za reservations: ", id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
-        termin.id as termin_id, termin.start_time, termin.end_time,
-        user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+        `SELECT * FROM (SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+          termin.id as termin_id, termin.start_time, termin.end_time,
+          user.email, user.restaurant_name
+          FROM termin
+            LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+            LEFT JOIN user ON tables.restaurant_id = user.id
+            WHERE tables.restaurant_id = ?
+        
+  EXCEPT
+  
+  SELECT * FROM (      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+                termin.id as termin_id, termin.start_time, termin.end_time,
+                user.email, user.restaurant_name
         FROM termin
-          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
-          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
-          LEFT JOIN user ON tables.restaurant_id = user.id
-          WHERE tables.restaurant_id = ?
+        LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+        LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+        LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = ? AND pending.day = ?
+                
           
-      EXCEPT
-      
-      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
-              termin.id as termin_id, termin.start_time, termin.end_time,
-              user.email, user.restaurant_name, pending.id as reservation_id, pending.day
-            FROM termin
-              LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
-          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
-          LEFT JOIN user ON tables.restaurant_id = user.id
-              WHERE tables.restaurant_id = ? AND pending.day = ?
-              ORDER BY tables.table_size`,
-        [id, id, day],
+  UNION			  
+          
+          
+    SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+                termin.id as termin_id, termin.start_time, termin.end_time,
+                user.email, user.restaurant_name
+      FROM termin
+      LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+      LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+      LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = ? AND reservations.day = ?
+          ORDER BY tables.table_size))`,
+        [id, id, day, id, day],
         (err, rows) => {
           if (err) reject(err);
           else {

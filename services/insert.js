@@ -207,14 +207,14 @@ async function editUser(req, res) {
 }
 
 async function reserveTable(req) {
-  const { restaurant_id, user_id, table_id, termin_id, day, month, year } = req.body;
+  const { restaurant_id, user_id, table_id, termin_id, day, month, year, email, start_time, end_time, firstname } = req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id: ",
     restaurant_id,
     user_id,
     table_id,
     termin_id,
-    day, month, year
+    day, month, year, email, start_time, end_time, firstname
   );
   const sql = "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -225,7 +225,14 @@ async function reserveTable(req) {
           reject(err);
         } else {
           resolve({
-            rows
+            rows,
+            email: email,
+            start_time: start_time,
+            end_time: end_time,
+            day: day,
+            month: month,
+            year: year,
+            firstname: firstname
           });
         }
       });
