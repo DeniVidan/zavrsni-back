@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/deniv/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2739"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainpending"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="pending" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="56"/><column index="4" value="60"/><column index="5" value="69"/><column index="6" value="40"/><column index="7" value="49"/><column index="8" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pending_users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="70"/><column index="3" value="67"/><column index="4" value="111"/><column index="5" value="40"/><column index="6" value="300"/><column index="7" value="78"/><column index="8" value="98"/><column index="9" value="56"/><column index="10" value="60"/><column index="11" value="69"/><column index="12" value="40"/><column index="13" value="49"/><column index="14" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="reservations" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="98"/><column index="3" value="56"/><column index="4" value="60"/><column index="5" value="69"/><column index="6" value="40"/><column index="7" value="49"/><column index="8" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="70"/><column index="3" value="67"/><column index="4" value="113"/><column index="5" value="122"/><column index="6" value="59"/><column index="7" value="42"/><column index="8" value="300"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*	
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Deni/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3655"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainpending"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="pending" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="126"/><column index="3" value="74"/><column index="4" value="80"/><column index="5" value="93"/><column index="6" value="52"/><column index="7" value="66"/><column index="8" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*	
 CREATE VIEW reservations_users AS
 	SELECT user.*, reservations.id as reservation_id, reservations.restaurant_id, reservations.user_id, reservations.table_id, reservations.termin_id
 		FROM  user
@@ -96,10 +96,10 @@ DROP VIEW reservations_users*/
 /*	SELECT *
 	FROM reservations_users
 */
-CREATE VIEW pending_users AS
-	SELECT u.id, u.firstname, u.lastname, u.email, u.role, u.image, pending.id as pending_id, pending.restaurant_id, pending.user_id, pending.table_id, pending.termin_id, pending.day, pending.month, pending.year
-		FROM  user u
-		INNER JOIN pending ON u.id = pending.user_id
+CREATE VIEW pending_users AS
+	SELECT u.id, u.firstname, u.lastname, u.email, u.role, u.image, pending.id as pending_id, pending.restaurant_id, pending.user_id, pending.table_id, pending.termin_id, pending.day, pending.month, pending.year
+		FROM  user u
+		INNER JOIN pending ON u.id = pending.user_id
 
 
 /*
@@ -205,6 +205,195 @@ SELECT ru.id as user_id, ru.firstname, ru.lastname, ru.email, ru.reservation_id,
 	LEFT JOIN tables ta ON ru.table_id = ta.id
 	LEFT JOIN termin te ON ru.termin_id = te.id
 	WHERE ru.restaurant_id = 2
+
+	
+	
+	SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+        FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          INNER JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2
+          
+      UNION
+      
+      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+            FROM termin
+              LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          INNER JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+              WHERE tables.restaurant_id = 2 AND reservations.day = 12
+              ORDER BY tables.table_size
+			  
+			  
+			  
 
-		
+
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+        FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2
+		  
+UNION
+
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+        FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2
+          
+ EXCEPT
+      
+      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+            FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2 AND reservations.day = 12
+
+UNION
+			  
+		SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+            FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2 AND pending.day = 12
+          ORDER BY tables.table_size
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+        FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2 AND (pending.day IS NULL OR pending.day = 13)
+          
+      EXCEPT
+      
+	  SELECT * FROM (      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+		  FROM termin
+		  LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		  LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+		  LEFT JOIN user ON tables.restaurant_id = user.id
+		  WHERE tables.restaurant_id = 2 AND pending.day = 14
+              
+			  
+UNION			  
+			  
+			  
+	SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+		FROM termin
+		LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+		LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = 2 AND reservations.day = 14
+        ORDER BY tables.table_size)
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+
+DROP VIEW reservations_pending
+--CREATE VIEW reservations_pending AS
+      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, pending.id as reservation_id, pending.day
+		  FROM termin
+		  LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		  LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+		  LEFT JOIN user ON tables.restaurant_id = user.id
+		  WHERE tables.restaurant_id = 2 AND pending.day = 13
+              
+			  
+UNION			  
+			  
+			  
+	SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name, reservations.id as reservation_id, reservations.day
+		FROM termin
+		LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+		LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = 2 AND reservations.day = 13
+        ORDER BY tables.table_size
+		
+		
+		
+		
+		
+		
+		
+		
+		
+SELECT * FROM (SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+        termin.id as termin_id, termin.start_time, termin.end_time,
+        user.email, user.restaurant_name
+        FROM termin
+          LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+          LEFT JOIN user ON tables.restaurant_id = user.id
+          WHERE tables.restaurant_id = 2
+		  
+EXCEPT
+
+SELECT * FROM (      SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name
+		  FROM termin
+		  LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		  LEFT JOIN pending ON tables.id = pending.table_id AND termin.id = pending.termin_id
+		  LEFT JOIN user ON tables.restaurant_id = user.id
+		  WHERE tables.restaurant_id = 2 AND pending.day = 8
+              
+			  
+UNION			  
+			  
+			  
+	SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
+              termin.id as termin_id, termin.start_time, termin.end_time,
+              user.email, user.restaurant_name
+		FROM termin
+		LEFT JOIN tables ON termin.restaurant_id = tables.restaurant_id
+		LEFT JOIN reservations ON tables.id = reservations.table_id AND termin.id = reservations.termin_id
+		LEFT JOIN user ON tables.restaurant_id = user.id
+        WHERE tables.restaurant_id = 2 AND reservations.day = 8
+        ORDER BY tables.table_size))
+		
 </sql><current_tab id="1"/></tab_sql></sqlb_project>
