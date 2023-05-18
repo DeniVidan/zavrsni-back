@@ -98,8 +98,31 @@ async function deleteTermin(req) {
     }
   }
 
+  async function deleteCode(req) {
+    const { email } = req.query;
+    console.log("email verfy delete: ", email);
+    const sql =
+      "DELETE FROM verify WHERE email = ?";
+  
+    try {
+      let verify = await new Promise((resolve, reject) => {
+        db.run(sql, [email], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(verify);
+          }
+        });
+      });
+      console.log("Verify code deleted successfully: ", verify);
+      return { verify };
+    } catch (err) {
+      console.log(err)
+      throw new Error("Something went wrong!");
+    }
+  }
 
 
 
 
-module.exports = { deleteTermin, deleteTable, deletePending, deleteReservation }
+module.exports = { deleteTermin, deleteTable, deletePending, deleteReservation, deleteCode }

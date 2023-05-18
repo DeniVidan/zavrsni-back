@@ -1,6 +1,12 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-const { register, registerAdmin, login } = require("../auth/auth");
+const {
+  register,
+  registerAdmin,
+  login,
+  makeVerifyCode,
+  verifyCode,
+} = require("../auth/auth");
 const {
   getRestaurantTables,
   getRestaurantTermins,
@@ -33,6 +39,7 @@ const {
   deleteTable,
   deletePending,
   deleteReservation,
+  deleteCode,
 } = require("../services/delete");
 
 require("dotenv").config();
@@ -45,6 +52,12 @@ exports.addUser = function () {
       let result = await register(req);
       //console.log("result: ", result)
       res.send({ result, msg: "User successfully created" });
+      console.log("cigic: ", result.user.email);
+      if (result.user.email) {
+        let res = await makeVerifyCode(req, result.user.email);
+
+        console.log("res za code: ", res);
+      }
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -244,12 +257,10 @@ exports.getAllTablesAndReservations = function () {
     try {
       let result = await getAllTablesAndReservations(req);
       //console.log("result: ", result)
-      res
-        .status(200)
-        .send({
-          result,
-          msg: "Restaurant all tables and reservations retrieved",
-        });
+      res.status(200).send({
+        result,
+        msg: "Restaurant all tables and reservations retrieved",
+      });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -278,7 +289,7 @@ exports.reserveTable = function () {
       let result = await reserveTable(req);
       //console.log("result: ", result)
       res.status(200).send({ result, msg: "Table reserved successfully!" });
-      console.log("EMAIL: ", result.reservation.email)
+      console.log("EMAIL: ", result.reservation.email);
       let transporter = nodemailer.createTransport({
         host: "smtp.zoho.eu",
         port: 465,
@@ -288,27 +299,25 @@ exports.reserveTable = function () {
           pass: process.env.PASSWORD, // your email password
         },
       });
-      let date = `${result.reservation.month}/${result.reservation.day}/${result.reservation.year}`
-      let start_time = result.reservation.start_time
-      let end_time = result.reservation.end_time
+      let date = `${result.reservation.month}/${result.reservation.day}/${result.reservation.year}`;
+      let start_time = result.reservation.start_time;
+      let end_time = result.reservation.end_time;
       let mailOptions = {
         from: `"Deni" <${process.env.EMAIL}>`, // sender address
         to: result.reservation.email, // list of receivers
-        subject: 'Reservation accepted ✔', // Subject line
+        subject: "Reservation accepted ✓", // Subject line
         text: `Thank you ${result.reservation.firstname} for choosing out restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
-        html: `Thank you <b>${result.reservation.firstname}</b> for choosing out restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b>` // html body
-    };
+        html: `Thank you <b>${result.reservation.firstname}</b> for choosing out restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b> `, // html body
+      };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
           return console.log(error);
-      }
-      console.log('Message sent: %s', info.messageId);
-      // Preview only available when sending through an Ethereal account
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-  });
-
-
+        }
+        console.log("Message sent: %s", info.messageId);
+        // Preview only available when sending through an Ethereal account
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -519,6 +528,34 @@ exports.getDescription = function () {
   };
 };
 
+exports.verifyCode = function () {
+  return async function (req, res) {
+    try {
+      let result = await verifyCode(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "verify code successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant verify code error" });
+    }
+  };
+};
+
+
+exports.deleteCode = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteCode(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Verify code deleted successfully!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Verify code can't be deleted error" });
+    }
+  };
+};
 /* async function addUser(firstname, lastname, email, password) {} */
 
 /* db.run(`INSERT INTO user (${fileds}, firstname, lastname, email, password) VALUES ('${values}', '${firstname}', '${lastname}', '${email}', '${password}')`); */

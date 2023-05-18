@@ -74,4 +74,8 @@ router.post("/add/description", [verify], user.addDescription());
 
 router.get("/get/description", [verify], user.getDescription());
 
+router.post("/verify/code", [verify], user.verifyCode());
+
+router.delete("/delete/verify/code", [verify], user.deleteCode());
+
 module.exports = router;
