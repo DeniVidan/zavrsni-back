@@ -22,6 +22,8 @@ const {
   getPending,
   getUserReservations,
   getDescription,
+  getAllReviews,
+  getAllRestaurantsImages,
 } = require("../services/select");
 const {
   createTable,
@@ -33,6 +35,7 @@ const {
   changeProfileImage,
   addToPending,
   addDescription,
+  makeReview,
 } = require("../services/insert");
 const {
   deleteTermin,
@@ -553,6 +556,50 @@ exports.deleteCode = function () {
       console.error(err.message);
       // ovako ne šalje message
       res.status(500).json({ err: "Verify code can't be deleted error" });
+    }
+  };
+};
+
+exports.getAllReviews = function () {
+  return async function (req, res) {
+    try {
+      let result = await getAllReviews(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Reviews get successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Reviews can't get error" });
+    }
+  };
+};
+
+
+exports.makeReview = function () {
+  return async function (req, res) {
+    try {
+      let result = await makeReview(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Review posted successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Review can't post error" });
+    }
+  };
+};
+
+
+exports.getAllRestaurantsImages = function () {
+  return async function (req, res) {
+    try {
+      let result = await getAllRestaurantsImages(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Restaurant images get successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Can't get restaurant images error" });
     }
   };
 };

@@ -102,7 +102,14 @@ async function getRestaurant(req) {
   const { id } = req.query;
   try {
     const rows = await new Promise((resolve, reject) => {
-      db.all("SELECT * FROM user WHERE id = ?", [id], (err, rows) => {
+      db.all(`
+      SELECT u.id as restaurant_id, u.firstname, u.lastname, u.email, u.restaurant_name, u.location, u.role, ROUND(AVG(r.rate), 1) AS avg_rate, ri.description, u.image
+      FROM user u
+      LEFT JOIN rates r ON u.id = r.restaurant_id
+      LEFT JOIN restaurant_info ri ON u.id = ri.restaurant_id
+      WHERE u.id = ?
+      GROUP BY u.email`,
+       [id], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -280,15 +287,15 @@ async function getRestaurantRating(req) {
 
 async function getUserRestaurantRating(req) {
   try {
-    const { user_id } = req.query;
+    const { user_id, restaurant_id } = req.query;
     console.log("daj mi id sad za rating: ", user_id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT user.restaurant_name, user.email, restaurant_rating.*, ((SUM(restaurant_rating.rate))/(COUNT(restaurant_rating.rate))) as rate
-        FROM user
-        LEFT JOIN restaurant_rating ON user.id = restaurant_rating.restaurant_id
-        WHERE user.role = 'admin' AND user.id = ?`,
-        [user_id],
+        `SELECT u.id as user_id, u.firstname, u.lastname, u.email, rr.restaurant_id, rr. rate, rr.review
+        FROM user u
+        LEFT JOIN restaurant_rating rr ON u.id = rr.user_id
+        WHERE u.id = ? AND rr.restaurant_id = ?`,
+        [user_id, restaurant_id],
         (err, rows) => {
           if (err) reject(err);
           else {
@@ -402,6 +409,51 @@ async function getDescription(req) {
   }
 }
 
+
+async function getAllReviews(req) {
+  const { id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+      `SELECT rr.id, rr.restaurant_id, rr.user_id, rr.rate, rr.review, ri.id as review_img_id, ri.image as review_image, u.firstname, u.lastname, u.email, u.image
+      FROM restaurant_rating rr
+      LEFT JOIN review_images ri ON rr.id = ri.rate_id
+      LEFT JOIN user u ON rr.user_id = u.id
+      WHERE rr.restaurant_id = ?`,
+       [id], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+    console.log("restaurant reviews: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+async function getAllRestaurantsImages(req) {
+  const { id } = req.query;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+      `SELECT rr.images
+      FROM restaurant_rating rr
+      WHERE rr.restaurant_id = ?`,
+       [id], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+    console.log("restaurant images: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
 module.exports = {
   getRestaurantTables,
   getRestaurantTermins,
@@ -418,4 +470,6 @@ module.exports = {
   getPending,
   getUserReservations,
   getDescription,
+  getAllReviews,
+  getAllRestaurantsImages,
 };

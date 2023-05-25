@@ -52,7 +52,7 @@ router.post("/rate", [verify], user.rateRestaurant());
 
 router.get("/restaurant/rating", [verify], user.getRestaurantRating());
 
-router.get("/user/restaurant/rating"), [verify], user.getUserRestaurantRating()
+router.get("/user/restaurant/rating", [verify], user.getUserRestaurantRating());
 
 router.get("/proba"), [verify], user.getUserRate()
 
@@ -77,5 +77,12 @@ router.get("/get/description", [verify], user.getDescription());
 router.post("/verify/code", [verify], user.verifyCode());
 
 router.delete("/delete/verify/code", [verify], user.deleteCode());
+
+router.get("/reviews", [verify], user.getAllReviews());
+
+router.post("/make/review", [verify], user.makeReview());
+
+router.get("/restaurant/images", [verify], user.getAllRestaurantsImages());
+
 
 module.exports = router;

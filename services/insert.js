@@ -1,6 +1,6 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const { getUser } = require("../services/select");
 
 async function createTable(req) {
@@ -99,10 +99,6 @@ async function renameTable(req) {
   }
 }
 
-
-
-
-
 async function editUser(req, res) {
   const { id, firstname, lastname, password, newPassword, token } = req.body;
   console.log(
@@ -127,7 +123,7 @@ async function editUser(req, res) {
       const passwordMatch = await bcrypt.compare(password, user[0].password);
 
       if (!passwordMatch) {
-        console.log("su krive lozinke: ", passwordMatch)
+        console.log("su krive lozinke: ", passwordMatch);
         return res.status(401).json({ message: "Invalid old password" });
       }
     }
@@ -162,7 +158,7 @@ async function editUser(req, res) {
             updatedFields.firstname || null,
             updatedFields.lastname || null,
             updatedFields.password || null,
-            id
+            id,
           ],
           function (err) {
             if (err) {
@@ -207,35 +203,58 @@ async function editUser(req, res) {
 }
 
 async function reserveTable(req) {
-  const { restaurant_id, user_id, table_id, termin_id, day, month, year, email, start_time, end_time, firstname } = req.body;
+  const {
+    restaurant_id,
+    user_id,
+    table_id,
+    termin_id,
+    day,
+    month,
+    year,
+    email,
+    start_time,
+    end_time,
+    firstname,
+  } = req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id: ",
     restaurant_id,
     user_id,
     table_id,
     termin_id,
-    day, month, year, email, start_time, end_time, firstname
+    day,
+    month,
+    year,
+    email,
+    start_time,
+    end_time,
+    firstname
   );
-  const sql = "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const sql =
+    "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let reservation = await new Promise((resolve, reject) => {
-      let rows = db.run(sql, [restaurant_id, user_id, table_id, termin_id, day, month, year], function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            rows,
-            email: email,
-            start_time: start_time,
-            end_time: end_time,
-            day: day,
-            month: month,
-            year: year,
-            firstname: firstname
-          });
+      let rows = db.run(
+        sql,
+        [restaurant_id, user_id, table_id, termin_id, day, month, year],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              rows,
+              email: email,
+              start_time: start_time,
+              end_time: end_time,
+              day: day,
+              month: month,
+              year: year,
+              firstname: firstname,
+            });
+          }
         }
-      });
+      );
     });
     console.log("Table reserved successfully: ", reservation);
     return { reservation };
@@ -247,13 +266,9 @@ async function reserveTable(req) {
 
 async function rateRestaurant(req) {
   const { restaurant_id, user_id, rate } = req.body;
-  console.log(
-    "restaurant_id, user_id, rate: ",
-    restaurant_id,
-    user_id,
-    rate
-  );
-  const sql = "INSERT INTO restaurant_rating (restaurant_id, user_id, rate) VALUES (?, ?, ?)";
+  console.log("restaurant_id, user_id, rate: ", restaurant_id, user_id, rate);
+  const sql =
+    "INSERT INTO restaurant_rating (restaurant_id, user_id, rate) VALUES (?, ?, ?)";
 
   try {
     let rating = await new Promise((resolve, reject) => {
@@ -262,7 +277,7 @@ async function rateRestaurant(req) {
           reject(err);
         } else {
           resolve({
-            rows
+            rows,
           });
         }
       });
@@ -275,14 +290,9 @@ async function rateRestaurant(req) {
   }
 }
 
-
 async function changeProfileImage(req) {
   const { image, user_id } = req.body;
-  console.log(
-    "image: ",
-    image,
-    user_id
-  );
+  console.log("image: ", image, user_id);
   const sql = "UPDATE user SET image = ? WHERE id = ?";
 
   try {
@@ -292,7 +302,7 @@ async function changeProfileImage(req) {
           reject(err);
         } else {
           resolve({
-            image: image
+            image: image,
           });
         }
       });
@@ -305,9 +315,9 @@ async function changeProfileImage(req) {
   }
 }
 
-
 async function addToPending(req) {
-  const { restaurant_id, user_id, table_id, termin_id, day, month, year } = req.body;
+  const { restaurant_id, user_id, table_id, termin_id, day, month, year } =
+    req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id, day, month, year: ",
     restaurant_id,
@@ -318,19 +328,24 @@ async function addToPending(req) {
     month,
     year
   );
-  const sql = "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const sql =
+    "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let reservation = await new Promise((resolve, reject) => {
-      let rows = db.run(sql, [restaurant_id, user_id, table_id, termin_id, day, month, year], function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            rows
-          });
+      let rows = db.run(
+        sql,
+        [restaurant_id, user_id, table_id, termin_id, day, month, year],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              rows,
+            });
+          }
         }
-      });
+      );
     });
     console.log("Table added to pening successfully: ", reservation);
     return { reservation };
@@ -340,15 +355,11 @@ async function addToPending(req) {
   }
 }
 
-
 async function addDescription(req) {
   const { restaurant_id, description } = req.body;
-  console.log(
-    "restaurant_id, description: ",
-    restaurant_id,
-    description
-  );
-  const sql = "INSERT INTO restaurant_info (restaurant_id, description) VALUES (?, ?)";
+  console.log("restaurant_id, description: ", restaurant_id, description);
+  const sql =
+    "INSERT INTO restaurant_info (restaurant_id, description) VALUES (?, ?)";
 
   try {
     let restaurant_info = await new Promise((resolve, reject) => {
@@ -357,7 +368,7 @@ async function addDescription(req) {
           reject(err);
         } else {
           resolve({
-            rows
+            rows,
           });
         }
       });
@@ -370,6 +381,45 @@ async function addDescription(req) {
   }
 }
 
+async function makeReview(req) {
+  const { restaurant_id, user_id, review, rate, image } = req.body;
+  console.log("restaurant_id, review: ", restaurant_id, review);
+  const sql = `UPDATE restaurant_rating SET 
+                rate = COALESCE(?, rate),
+                review = COALESCE(?, review),
+                images = COALESCE (?, images)
+                WHERE restaurant_id = ? AND user_id = ?
+                `;
 
+  try {
+    let restaurant_info = await new Promise((resolve, reject) => {
+      let rows = db.run(sql, [rate || null, review || null, image || null, restaurant_id, user_id], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            rows,
+          });
+        }
+      });
+    });
+    console.log("Restaurant review added successfully: ", restaurant_info);
+    return { restaurant_info };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
 
-module.exports = { createTable, createTermin, renameTable, editUser, reserveTable, rateRestaurant, changeProfileImage, addToPending, addDescription };
+module.exports = {
+  createTable,
+  createTermin,
+  renameTable,
+  editUser,
+  reserveTable,
+  rateRestaurant,
+  changeProfileImage,
+  addToPending,
+  addDescription,
+  makeReview,
+};

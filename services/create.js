@@ -91,6 +91,8 @@ db.serialize(() => {
       restaurant_id INTEGER NOT NULL,
       user_id INTEGER NOT NULL,
       rate REAL NOT NULL,
+      review TEXT,
+      images TEXT,
       FOREIGN KEY (restaurant_id) REFERENCES user(id),
       FOREIGN KEY (user_id) REFERENCES user(id)
     )
@@ -136,6 +138,23 @@ db.serialize(() => {
     (err) => {
       if (err) console.error(err.message);
       else console.log("Restaurant info table created successfully!");
+    }
+  );
+
+  db.run(
+    `
+    CREATE TABLE IF NOT EXISTS review_images (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      rate_id INTEGER NOT NULL,
+      image TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES user(id),
+      FOREIGN KEY (rate_id) REFERENCES restaurant_rating(id)
+    )
+  `,
+    (err) => {
+      if (err) console.error(err.message);
+      else console.log("Review images table created successfully!");
     }
   );
 
