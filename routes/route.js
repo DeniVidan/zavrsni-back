@@ -70,6 +70,8 @@ router.get("/get/user/reservations", [verify], user.getUserReservations());
 
 router.delete("/delete/reservation", [verify], user.deleteReservation());
 
+router.delete("/delete/existing/reservation", [verify], user.deleteExistingReservation());
+
 router.post("/add/description", [verify], user.addDescription());
 
 router.get("/get/description", [verify], user.getDescription());

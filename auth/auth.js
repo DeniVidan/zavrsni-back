@@ -249,7 +249,7 @@ async function registerAdmin(req) {
         }
       );
     });
-    console.log("User registered successfully: ", user);
+    //console.log("User registered successfully: ", user);
     return { user };
   } catch (error) {
     console.error(error.message);
@@ -266,7 +266,7 @@ async function login(req) {
         else resolve(rows);
       });
     });
-    console.log("daj mi row: ", rows);
+    //console.log("daj mi row: ", rows);
     if (rows.length > 0) {
       const passwordMatch = await bcrypt.compare(password, rows[0].password);
       //console.log(passwordMatch)

@@ -42,6 +42,7 @@ const {
   deleteTable,
   deletePending,
   deleteReservation,
+  deleteExistingReservation,
   deleteCode,
 } = require("../services/delete");
 
@@ -219,7 +220,7 @@ exports.editUser = function () {
     try {
       let result = await editUser(req, res);
       //console.log("result: ", result)
-      res.status(200).send({ result, msg: "USer updated successfully!" });
+      //res.status(200).send({ result, msg: "USer updated successfully!" });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -290,7 +291,7 @@ exports.reserveTable = function () {
   return async function (req, res) {
     try {
       let result = await reserveTable(req);
-      //console.log("result: ", result)
+      console.log("result: ", result)
       res.status(200).send({ result, msg: "Table reserved successfully!" });
       console.log("EMAIL: ", result.reservation.email);
       let transporter = nodemailer.createTransport({
@@ -309,7 +310,7 @@ exports.reserveTable = function () {
         from: `"Deni" <${process.env.EMAIL}>`, // sender address
         to: result.reservation.email, // list of receivers
         subject: "Reservation accepted ✓", // Subject line
-        text: `Thank you ${result.reservation.firstname} for choosing out restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
+        text: `Thank you ${result.reservation.firstname} for choosing our restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
         html: `Thank you <b>${result.reservation.firstname}</b> for choosing out restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b> `, // html body
       };
 
@@ -493,6 +494,20 @@ exports.deleteReservation = function () {
   return async function (req, res) {
     try {
       let result = await deleteReservation(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Delete reservation successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant delete user reservation error" });
+    }
+  };
+};
+
+exports.deleteExistingReservation = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteExistingReservation(req);
       //console.log("result: ", result)
       res.status(200).send({ result, msg: "Delete reservation successfull!" });
     } catch (err) {

@@ -110,81 +110,40 @@ async function editUser(req, res) {
     newPassword,
     token
   );
-  let user = await getUser(id);
-  console.log("user length: ", user[0].password);
 
   try {
+    let user = await getUser(id);
+
     if (user.length === 0) {
-      return { message: "User not found" };
+      return res.status(500).send({ message: "User not found" });
     }
 
-    // compare old password with bcrypt
-    if (password != "" && newPassword != "") {
+    if (password && newPassword) {
       const passwordMatch = await bcrypt.compare(password, user[0].password);
 
       if (!passwordMatch) {
         console.log("su krive lozinke: ", passwordMatch);
-        return res.status(401).json({ message: "Invalid old password" });
+        return res.status(400).send({ message: "Invalid old password" });
       }
     }
 
-    let hashedPassword = user[0].password;
-    let updatedFields = {};
+    const updatedFields = {};
 
-    // hash new password if entered
-    if (newPassword && newPassword !== "") {
-      hashedPassword = await bcrypt.hash(newPassword, 8);
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 8);
       updatedFields.password = hashedPassword;
     }
 
-    // update user info
-    if (firstname && firstname !== "") {
+    if (firstname) {
       updatedFields.firstname = firstname;
     }
 
-    if (lastname && lastname !== "") {
+    if (lastname) {
       updatedFields.lastname = lastname;
     }
 
-    if (Object.keys(updatedFields).length > 0) {
-      let updated = await new Promise((resolve, reject) => {
-        let user = db.run(
-          `UPDATE user SET 
-            firstname = COALESCE(?, firstname),
-            lastname = COALESCE(?, lastname),
-            password = COALESCE(?, password)
-            WHERE id = ?`,
-          [
-            updatedFields.firstname || null,
-            updatedFields.lastname || null,
-            updatedFields.password || null,
-            id,
-          ],
-          function (err) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(user);
-            }
-          }
-        );
-      });
-
-      console.log("updated: ", user);
-
-      return {
-        user: {
-          token,
-          firstname: updatedFields.firstname || user[0].firstname,
-          lastname: updatedFields.lastname || user[0].lastname,
-          email: user[0].email,
-          role: user[0].role,
-        },
-
-        message: "User info updated successfully tnx",
-      };
-    } else {
-      return {
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(200).send({
         user: {
           token,
           firstname: user[0].firstname,
@@ -192,13 +151,45 @@ async function editUser(req, res) {
           email: user[0].email,
           role: user[0].role,
         },
-
         message: "No changes made",
-      };
+      });
     }
+
+    db.run(
+      `UPDATE user SET 
+        firstname = COALESCE(?, firstname),
+        lastname = COALESCE(?, lastname),
+        password = COALESCE(?, password)
+        WHERE id = ?`,
+      [
+        updatedFields.firstname || null,
+        updatedFields.lastname || null,
+        updatedFields.password || null,
+        id,
+      ],
+      function (err) {
+        if (err) {
+          console.error("Error updating user info:", err);
+          return res.status(500).send({ message: "Server error" });
+        } else {
+          const updatedUser = {
+            token,
+            firstname: updatedFields.firstname || user[0].firstname,
+            lastname: updatedFields.lastname || user[0].lastname,
+            email: user[0].email,
+            role: user[0].role,
+          };
+
+          res.status(200).send({
+            user: updatedUser,
+            message: "User info updated successfully",
+          });
+        }
+      }
+    );
   } catch (err) {
     console.error("daj error vise: !", err);
-    return { message: "Server error" };
+    res.status(500).send({ message: "Server error" });
   }
 }
 
@@ -214,7 +205,7 @@ async function reserveTable(req) {
     email,
     start_time,
     end_time,
-    firstname,
+    name,
   } = req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id: ",
@@ -228,16 +219,16 @@ async function reserveTable(req) {
     email,
     start_time,
     end_time,
-    firstname
+    name
   );
   const sql =
-    "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO reservations (restaurant_id, user_id, table_id, termin_id, day, month, year, name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let reservation = await new Promise((resolve, reject) => {
       let rows = db.run(
         sql,
-        [restaurant_id, user_id, table_id, termin_id, day, month, year],
+        [restaurant_id, user_id, table_id, termin_id, day, month, year, name],
         function (err) {
           if (err) {
             reject(err);
@@ -250,7 +241,7 @@ async function reserveTable(req) {
               day: day,
               month: month,
               year: year,
-              firstname: firstname,
+              name: name,
             });
           }
         }
@@ -316,8 +307,16 @@ async function changeProfileImage(req) {
 }
 
 async function addToPending(req) {
-  const { restaurant_id, user_id, table_id, termin_id, day, month, year } =
-    req.body;
+  const {
+    restaurant_id,
+    user_id,
+    table_id,
+    termin_id,
+    day,
+    month,
+    year,
+    name,
+  } = req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id, day, month, year: ",
     restaurant_id,
@@ -326,16 +325,17 @@ async function addToPending(req) {
     termin_id,
     day,
     month,
-    year
+    year,
+    name
   );
   const sql =
-    "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year, name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let reservation = await new Promise((resolve, reject) => {
       let rows = db.run(
         sql,
-        [restaurant_id, user_id, table_id, termin_id, day, month, year],
+        [restaurant_id, user_id, table_id, termin_id, day, month, year, name],
         function (err) {
           if (err) {
             reject(err);
@@ -383,31 +383,89 @@ async function addDescription(req) {
 
 async function makeReview(req) {
   const { restaurant_id, user_id, review, rate, image } = req.body;
-  console.log("restaurant_id, review: ", restaurant_id, review);
-  const sql = `UPDATE restaurant_rating SET 
-                rate = COALESCE(?, rate),
-                review = COALESCE(?, review),
-                images = COALESCE (?, images)
-                WHERE restaurant_id = ? AND user_id = ?
-                `;
+  console.log("restaurant_id, review: ", restaurant_id, user_id, review, rate);
+  const aa = `SELECT * 
+                  FROM restaurant_rating 
+                  WHERE restaurant_id = ? AND user_id = ?`;
+
+  let proba;
 
   try {
-    let restaurant_info = await new Promise((resolve, reject) => {
-      let rows = db.run(sql, [rate || null, review || null, image || null, restaurant_id, user_id], function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            rows,
-          });
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT * 
+          FROM restaurant_rating 
+          WHERE restaurant_id = ? AND user_id = ?`,
+        [restaurant_id, user_id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
         }
-      });
+      );
     });
-    console.log("Restaurant review added successfully: ", restaurant_info);
-    return { restaurant_info };
+    // console.log("user: ", rows);
+    proba = rows;
   } catch (err) {
-    console.log(err);
-    throw new Error("Something went wrong!");
+    console.error(err.message);
+  }
+
+  console.log("review: ", proba.length);
+  let sql;
+  if (proba.length == 0) {
+    sql = `INSERT INTO restaurant_rating (restaurant_id, user_id, rate, review, images) VALUES (?, ?, ?, ?, ?)`;
+
+    try {
+      let restaurant_review = await new Promise((resolve, reject) => {
+        let rows = db.run(
+          sql,
+          [restaurant_id, user_id, rate, review, image],
+          function (err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve({
+                rows,
+              });
+            }
+          }
+        );
+      });
+      console.log("Restaurant info added successfully: ", restaurant_review);
+      return { restaurant_review };
+    } catch (err) {
+      console.log(err);
+      throw new Error("Something went wrong!");
+    }
+  } else {
+    sql = `UPDATE restaurant_rating SET 
+        rate = COALESCE(?, rate),
+        review = COALESCE(?, review),
+        images = COALESCE (?, images)
+        WHERE restaurant_id = ? AND user_id = ?
+        `;
+
+    try {
+      let restaurant_info = await new Promise((resolve, reject) => {
+        let rows = db.run(
+          sql,
+          [rate || null, review || null, image || null, restaurant_id, user_id],
+          function (err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve({
+                rows,
+              });
+            }
+          }
+        );
+      });
+      console.log("Restaurant review added successfully: ", restaurant_info);
+      return { restaurant_info };
+    } catch (err) {
+      console.log(err);
+      throw new Error("Something went wrong!");
+    }
   }
 }
 

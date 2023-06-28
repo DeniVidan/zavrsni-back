@@ -37,7 +37,7 @@ async function getUser(id) {
         else resolve(rows);
       });
     });
-    console.log("user: ", rows);
+   // console.log("user: ", rows);
 
     return rows;
   } catch (err) {
@@ -90,7 +90,7 @@ async function getRestaurants() {
         }
       );
     });
-    console.log("restoranici: ", rows);
+    //console.log("restoranici: ", rows);
 
     return rows;
   } catch (err) {
@@ -114,7 +114,7 @@ async function getRestaurant(req) {
         else resolve(rows);
       });
     });
-    console.log("restoran: ", rows);
+    //console.log("restoran: ", rows);
 
     return rows;
   } catch (err) {
@@ -148,7 +148,7 @@ async function getUserRate(req) {
 async function getAllTablesAndReservations(req) {
   try {
     const { id, day, month, year } = req.query;
-    console.log("daj mi id sad za reservations: ", id);
+    //console.log("daj mi id sad za reservations: ", id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
         `SELECT * FROM (SELECT tables.id as tables_id, tables.restaurant_id, tables.table_name, tables.table_size,
@@ -202,7 +202,7 @@ async function getAllTablesAndReservations(req) {
 async function groupTables(req) {
   try {
     const { id } = req.query;
-    console.log("daj mi id sad za reservations: ", id);
+    //console.log("daj mi id sad za reservations: ", id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
         `	SELECT tables.table_size
@@ -229,10 +229,10 @@ async function groupTables(req) {
 async function getAllRestaurantsReservations(req) {
   try {
     const { id, day, month, year } = req.query;
-    console.log("daj mi id sad za reservations: ", id, day, month, year);
+    //console.log("daj mi id sad za reservations: ", id, day, month, year);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT user.email as restaurant_email, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.firstname, reservations_users.lastname, reservations_users.table_id, reservations_users.termin_id, termin.start_time, termin.end_time
+        `SELECT user.email as restaurant_email, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.firstname, reservations_users.lastname, reservations_users.table_id, reservations_users.termin_id, reservations_users.name, termin.start_time, termin.end_time
         FROM user
         LEFT JOIN reservations_users ON user.id = reservations_users.restaurant_id
         LEFT JOIN termin ON reservations_users.termin_id = termin.id
@@ -257,7 +257,7 @@ async function getAllRestaurantsReservations(req) {
 async function getRestaurantRating(req) {
   try {
     const { user_id, restaurant_id } = req.query;
-    console.log("daj mi id sad za rating: ", restaurant_id, user_id);
+    //console.log("daj mi id sad za rating: ", restaurant_id, user_id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
         `SELECT u.id, u.firstname, u.lastname, u.email, u.restaurant_name, u.role,r.user_id, r.rate as rate
@@ -277,7 +277,7 @@ async function getRestaurantRating(req) {
         }
       );
     });
-    console.log("ČA REJTING: ", rows);
+    //console.log(": ", rows);
     return rows;
   } catch (err) {
     console.log(err);
@@ -288,7 +288,7 @@ async function getRestaurantRating(req) {
 async function getUserRestaurantRating(req) {
   try {
     const { user_id, restaurant_id } = req.query;
-    console.log("daj mi id sad za rating: ", user_id);
+    //console.log("daj mi id sad za rating: ", user_id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
         `SELECT u.id as user_id, u.firstname, u.lastname, u.email, rr.restaurant_id, rr. rate, rr.review
@@ -304,7 +304,7 @@ async function getUserRestaurantRating(req) {
         }
       );
     });
-    console.log("ČA REJTING: ", rows);
+    //console.log(": ", rows);
     return rows;
   } catch (err) {
     console.log(err);
@@ -327,7 +327,7 @@ async function getProfileImage(req) {
         }
       );
     });
-    console.log("user image: ", rows);
+    //console.log("user image: ", rows);
 
     return rows;
   } catch (err) {
@@ -340,7 +340,7 @@ async function getPending(req) {
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT pu.id as user_id, pu.firstname, pu.lastname, pu.email, pu.pending_id, pu.restaurant_id, pu.table_id, pu.termin_id, pu.day, pu.month, pu. year,
+        `SELECT pu.id as user_id, pu.firstname, pu.lastname, pu.email, pu.pending_id, pu.restaurant_id, pu.table_id, pu.termin_id, pu.day, pu.month, pu.year, pu.name,
         ta.table_name, ta.table_size, te.start_time, te.end_time
       FROM pending_users pu
       LEFT JOIN tables ta ON pu.table_id = ta.id
@@ -425,7 +425,7 @@ async function getAllReviews(req) {
         else resolve(rows);
       });
     });
-    console.log("restaurant reviews: ", rows);
+    //console.log("restaurant reviews: ", rows);
 
     return rows;
   } catch (err) {
@@ -446,7 +446,7 @@ async function getAllRestaurantsImages(req) {
         else resolve(rows);
       });
     });
-    console.log("restaurant images: ", rows);
+    //console.log("restaurant images: ", rows);
 
     return rows;
   } catch (err) {
