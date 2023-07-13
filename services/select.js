@@ -45,6 +45,22 @@ async function getUser(id) {
   }
 }
 
+async function getRestaurantGallery(id) {
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all("SELECT * FROM restaurant_gallery rg WHERE rg.restaurant_id = ?", [id], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+   // console.log("user: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
 async function getRestaurantTermins(req) {
   try {
     const { id } = req.query;
@@ -291,7 +307,7 @@ async function getUserRestaurantRating(req) {
     //console.log("daj mi id sad za rating: ", user_id);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT u.id as user_id, u.firstname, u.lastname, u.email, rr.restaurant_id, rr. rate, rr.review
+        `SELECT u.id as user_id, u.firstname, u.lastname, u.email, rr.restaurant_id, rr. rate, rr.review, rr.date_time, rr.id as review_id
         FROM user u
         LEFT JOIN restaurant_rating rr ON u.id = rr.user_id
         WHERE u.id = ? AND rr.restaurant_id = ?`,
@@ -340,7 +356,7 @@ async function getPending(req) {
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT pu.id as user_id, pu.firstname, pu.lastname, pu.email, pu.pending_id, pu.restaurant_id, pu.table_id, pu.termin_id, pu.day, pu.month, pu.year, pu.name,
+        `SELECT pu.id as user_id, pu.firstname, pu.lastname, pu.email, pu.pending_id, pu.restaurant_id, pu.table_id, pu.termin_id, pu.day, pu.month, pu.year, pu.name, pu.date_time,
         ta.table_name, ta.table_size, te.start_time, te.end_time
       FROM pending_users pu
       LEFT JOIN tables ta ON pu.table_id = ta.id
@@ -419,7 +435,8 @@ async function getAllReviews(req) {
       FROM restaurant_rating rr
       LEFT JOIN review_images ri ON rr.id = ri.rate_id
       LEFT JOIN user u ON rr.user_id = u.id
-      WHERE rr.restaurant_id = ?`,
+      WHERE rr.restaurant_id = ?
+      ORDER BY rr.id DESC`,
        [id], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
@@ -454,10 +471,39 @@ async function getAllRestaurantsImages(req) {
   }
 }
 
+
+
+
+async function getGallery(req) {
+  const { id } = req.query;
+  console.log("id: ", id)
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      db.all(
+        `SELECT * 
+            FROM restaurant_gallery rg
+            WHERE rg.restaurant_id = ?`,
+        [id],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        }
+      );
+    });
+//    console.log("restaurant gallery: ", rows);
+
+    return rows;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+
 module.exports = {
   getRestaurantTables,
   getRestaurantTermins,
   getUser,
+  getRestaurantGallery,
   getRestaurants,
   getRestaurant,
   getAllTablesAndReservations,
@@ -472,4 +518,5 @@ module.exports = {
   getDescription,
   getAllReviews,
   getAllRestaurantsImages,
+  getGallery,
 };

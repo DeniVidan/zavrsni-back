@@ -1,7 +1,7 @@
 var sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("mydb.db");
 const bcrypt = require("bcrypt");
-const { getUser } = require("../services/select");
+const { getUser, getRestaurantGallery } = require("../services/select");
 
 async function createTable(req) {
   const { restaurant_id, name, size } = req.body;
@@ -316,6 +316,7 @@ async function addToPending(req) {
     month,
     year,
     name,
+    date_time,
   } = req.body;
   console.log(
     "restaurant_id, user_id, table_id, termin_id, day, month, year: ",
@@ -326,16 +327,27 @@ async function addToPending(req) {
     day,
     month,
     year,
-    name
+    name,
+    date_time
   );
   const sql =
-    "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year, name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO pending (restaurant_id, user_id, table_id, termin_id, day, month, year, name, date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let reservation = await new Promise((resolve, reject) => {
       let rows = db.run(
         sql,
-        [restaurant_id, user_id, table_id, termin_id, day, month, year, name],
+        [
+          restaurant_id,
+          user_id,
+          table_id,
+          termin_id,
+          day,
+          month,
+          year,
+          name,
+          date_time,
+        ],
         function (err) {
           if (err) {
             reject(err);
@@ -382,43 +394,120 @@ async function addDescription(req) {
 }
 
 async function makeReview(req) {
-  const { restaurant_id, user_id, review, rate, image } = req.body;
-  console.log("restaurant_id, review: ", restaurant_id, user_id, review, rate);
-  const aa = `SELECT * 
-                  FROM restaurant_rating 
-                  WHERE restaurant_id = ? AND user_id = ?`;
+  const { restaurant_id, user_id, review, rate, image, time, review_id } =
+    req.body;
+  console.log(
+    "restaurant_id, review: ",
+    restaurant_id,
+    user_id,
+    review,
+    rate,
+    review_id, image
+  );
 
-  let proba;
+  let sql = `UPDATE restaurant_rating SET 
+        rate = COALESCE(?, rate),
+        review = COALESCE(?, review),
+        images = COALESCE (?, images),
+        date_time = ?
+        WHERE restaurant_id = ? AND user_id = ? AND id = ?
+        `;
 
   try {
-    const rows = await new Promise((resolve, reject) => {
-      db.all(
-        `SELECT * 
-          FROM restaurant_rating 
-          WHERE restaurant_id = ? AND user_id = ?`,
-        [restaurant_id, user_id],
-        (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
+    let restaurant_info = await new Promise((resolve, reject) => {
+      let rows = db.run(
+        sql,
+        [
+          rate || null,
+          review || null,
+          image || null,
+          time,
+          restaurant_id,
+          user_id,
+          review_id,
+        ],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              rows,
+            });
+          }
         }
       );
     });
-    // console.log("user: ", rows);
-    proba = rows;
+    console.log("Restaurant review added successfully: ", restaurant_info);
+    return { restaurant_info };
   } catch (err) {
-    console.error(err.message);
+    console.log(err);
+    throw new Error("Something went wrong!");
   }
+}
 
-  console.log("review: ", proba.length);
+async function makeReview2(req) {
+  const { restaurant_id, user_id, review, rate, image, time } = req.body;
+  console.log("restaurant_id, review: ", restaurant_id, user_id, review, rate);
+
   let sql;
-  if (proba.length == 0) {
-    sql = `INSERT INTO restaurant_rating (restaurant_id, user_id, rate, review, images) VALUES (?, ?, ?, ?, ?)`;
+  sql = `INSERT INTO restaurant_rating (restaurant_id, user_id, rate, review, images, date_time) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    try {
-      let restaurant_review = await new Promise((resolve, reject) => {
+  try {
+    let restaurant_review = await new Promise((resolve, reject) => {
+      let rows = db.run(
+        sql,
+        [restaurant_id, user_id, rate, review, image, time],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              rows,
+            });
+          }
+        }
+      );
+    });
+    console.log("Restaurant info added successfully: ", restaurant_review);
+    return { restaurant_review };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
+  }
+}
+
+async function addGallery(req) {
+  const { id, images } = req.body;
+  console.log("restaurant_id, images: ", id);
+
+
+
+  try {
+    let gallery = await getRestaurantGallery(id)
+    
+    if(gallery.length == 0) {
+      let sql = `INSERT INTO restaurant_gallery (restaurant_id, image) VALUES (?, ?)`;
+
+      try {
+        await db.run(sql, [id, images]);
+        console.log("Image inserted successfully");
+      } catch (err) {
+        console.log(err);
+        throw new Error("Something went wrong!");
+      }
+
+      
+
+    } else {
+      let sql = `UPDATE restaurant_gallery SET image = ? WHERE restaurant_id = ?`
+      console.log("usao sam u else")
+      let restaurant_gallery = await new Promise((resolve, reject) => {
         let rows = db.run(
           sql,
-          [restaurant_id, user_id, rate, review, image],
+          [
+            images,
+            id,
+          ],
           function (err) {
             if (err) {
               reject(err);
@@ -430,42 +519,17 @@ async function makeReview(req) {
           }
         );
       });
-      console.log("Restaurant info added successfully: ", restaurant_review);
-      return { restaurant_review };
-    } catch (err) {
-      console.log(err);
-      throw new Error("Something went wrong!");
     }
-  } else {
-    sql = `UPDATE restaurant_rating SET 
-        rate = COALESCE(?, rate),
-        review = COALESCE(?, review),
-        images = COALESCE (?, images)
-        WHERE restaurant_id = ? AND user_id = ?
-        `;
 
-    try {
-      let restaurant_info = await new Promise((resolve, reject) => {
-        let rows = db.run(
-          sql,
-          [rate || null, review || null, image || null, restaurant_id, user_id],
-          function (err) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve({
-                rows,
-              });
-            }
-          }
-        );
-      });
-      console.log("Restaurant review added successfully: ", restaurant_info);
-      return { restaurant_info };
-    } catch (err) {
-      console.log(err);
-      throw new Error("Something went wrong!");
-    }
+
+      console.log("Restaurant info added successfully: ");
+     
+
+     console.log("daj mi gallery lenth: ", gallery.length)
+      /* return { restaurant_review }; */
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong!");
   }
 }
 
@@ -480,4 +544,6 @@ module.exports = {
   addToPending,
   addDescription,
   makeReview,
+  makeReview2,
+  addGallery,
 };

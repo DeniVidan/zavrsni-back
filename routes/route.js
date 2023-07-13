@@ -84,7 +84,14 @@ router.get("/reviews", [verify], user.getAllReviews());
 
 router.post("/make/review", [verify], user.makeReview());
 
+router.post("/make/review2", [verify], user.makeReview2());
+
 router.get("/restaurant/images", [verify], user.getAllRestaurantsImages());
+
+router.get("/get/gallery", [verify], user.getGallery());
+
+router.post("/add/gallery", [verify], user.addGallery());
+
 
 
 module.exports = router;

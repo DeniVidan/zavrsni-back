@@ -24,6 +24,7 @@ const {
   getDescription,
   getAllReviews,
   getAllRestaurantsImages,
+  getGallery,
 } = require("../services/select");
 const {
   createTable,
@@ -36,6 +37,8 @@ const {
   addToPending,
   addDescription,
   makeReview,
+  makeReview2,
+  addGallery,
 } = require("../services/insert");
 const {
   deleteTermin,
@@ -604,6 +607,20 @@ exports.makeReview = function () {
   };
 };
 
+exports.makeReview2 = function () {
+  return async function (req, res) {
+    try {
+      let result = await makeReview2(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Review posted successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Review can't post error" });
+    }
+  };
+};
+
 
 exports.getAllRestaurantsImages = function () {
   return async function (req, res) {
@@ -615,6 +632,34 @@ exports.getAllRestaurantsImages = function () {
       console.error(err.message);
       // ovako ne šalje message
       res.status(500).json({ err: "Can't get restaurant images error" });
+    }
+  };
+};
+
+exports.getGallery = function () {
+  return async function (req, res) {
+    try {
+      let result = await getGallery(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Gallery images get successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Can't get gallery images error" });
+    }
+  };
+};
+
+exports.addGallery = function () {
+  return async function (req, res) {
+    try {
+      let result = await addGallery(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Gallery images added successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Can't add gallery images error" });
     }
   };
 };

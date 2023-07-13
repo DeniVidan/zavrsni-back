@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Deni/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3832"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainpending"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="pending" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="126"/><column index="3" value="74"/><column index="4" value="80"/><column index="5" value="93"/><column index="6" value="52"/><column index="7" value="66"/><column index="8" value="52"/><column index="9" value="57"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*	
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Deni/Desktop/ZAVRSNI/zavrsni-back/mydb.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="8222"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,18:mainrestaurant_gallery"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="pending" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="126"/><column index="3" value="74"/><column index="4" value="80"/><column index="5" value="93"/><column index="6" value="52"/><column index="7" value="66"/><column index="8" value="52"/><column index="9" value="57"/><column index="10" value="251"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pending_users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths/><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="reservations_users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="92"/><column index="3" value="88"/><column index="4" value="168"/><column index="5" value="157"/><column index="6" value="79"/><column index="7" value="52"/><column index="8" value="300"/><column index="9" value="300"/><column index="10" value="75"/><column index="11" value="134"/><column index="12" value="126"/><column index="13" value="74"/><column index="14" value="80"/><column index="15" value="93"/><column index="16" value="52"/><column index="17" value="66"/><column index="18" value="52"/><column index="19" value="57"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="restaurant_gallery" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="126"/><column index="3" value="401"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="restaurant_rating" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="4" mode="0"/></sort><column_widths><column index="1" value="52"/><column index="2" value="126"/><column index="3" value="74"/><column index="4" value="52"/><column index="5" value="161"/><column index="6" value="300"/><column index="7" value="209"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*	
 CREATE VIEW reservations_users AS
 	SELECT user.*, reservations.id as reservation_id, reservations.restaurant_id, reservations.user_id, reservations.table_id, reservations.termin_id
 		FROM  user
@@ -101,7 +101,7 @@ DROP VIEW reservations_users*/
 	FROM reservations_users
 */
 CREATE VIEW pending_users AS
-	SELECT u.id, u.firstname, u.lastname, u.email, u.role, u.image, pending.id as pending_id, pending.restaurant_id, pending.user_id, pending.table_id, pending.termin_id, pending.day, pending.month, pending.year, pending.name
+	SELECT u.id, u.firstname, u.lastname, u.email, u.role, u.image, pending.id as pending_id, pending.restaurant_id, pending.user_id, pending.table_id, pending.termin_id, pending.day, pending.month, pending.year, pending.name, pending.date_time
 		FROM  user u
 		INNER JOIN pending ON u.id = pending.user_id
 
@@ -426,8 +426,29 @@ SELECT u.id as user_id, u.firstname, u.lastname, u.email, rr.restaurant_id, rr. 
 
 SELECT rr.images
 	FROM restaurant_rating rr
-	WHERE rr.restaurant_id = 26
-</sql><sql name="CREATE TABLES">
+	WHERE rr.restaurant_id = 26
+	
+	
+	
+	
+	
+SELECT rr.id, rr.restaurant_id, rr.user_id, rr.rate, rr.review, ri.id as review_img_id, ri.image as review_image, u.firstname, u.lastname, u.email, u.image
+      FROM restaurant_rating rr
+      LEFT JOIN review_images ri ON rr.id = ri.rate_id
+      LEFT JOIN user u ON rr.user_id = u.id
+      WHERE rr.restaurant_id = 26
+	  ORDER BY rr.id DESC
+
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+SELECT * 
+	FROM restaurant_gallery rg
+	WHERE rg.restaurant_id = 26</sql><sql name="CREATE TABLES">
     CREATE TABLE IF NOT EXISTS user (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       firstname TEXT NOT NULL,
@@ -465,7 +486,7 @@ SELECT rr.images
       termin_id INTEGER NOT NULL,
       day INTEGER NOT NULL,
       month INTEGER NOT NULL,
-      year INTEGER NOT NULL,
+      year INTEGER NOT NULL,
 	  name TEXT NOT NULL,
       FOREIGN KEY (restaurant_id) REFERENCES user(id),
       FOREIGN KEY (user_id) REFERENCES user(id),
@@ -473,16 +494,7 @@ SELECT rr.images
       FOREIGN KEY (termin_id) REFERENCES termin(id)
     )
 	
-    CREATE TABLE IF NOT EXISTS restaurant_rating (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      restaurant_id INTEGER NOT NULL,
-      user_id INTEGER NOT NULL,
-      rate REAL NOT NULL,
-	  review TEXT,
-	  images TEXT,
-      FOREIGN KEY (restaurant_id) REFERENCES user(id),
-      FOREIGN KEY (user_id) REFERENCES user(id)
-    )
+ 
 
     CREATE TABLE IF NOT EXISTS pending (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -492,8 +504,9 @@ SELECT rr.images
       termin_id INTEGER NOT NULL,
       day INTEGER NOT NULL,
       month INTEGER NOT NULL,
-      year INTEGER NOT NULL,
-	  name TEXT NOT NULL,
+      year INTEGER NOT NULL,
+	  name TEXT NOT NULL,
+	  date_time TEXT NOT NULL,
       FOREIGN KEY (restaurant_id) REFERENCES user(id),
       FOREIGN KEY (user_id) REFERENCES user(id),
       FOREIGN KEY (table_id) REFERENCES tables(id),
@@ -525,7 +538,15 @@ SELECT rr.images
       image TEXT NOT NULL,
       FOREIGN KEY (user_id) REFERENCES user(id),
       FOREIGN KEY (rate_id) REFERENCES restaurant_rating(id)
-    )
+    )
+	
+	
+	CREATE TABLE IF NOT EXISTS restaurant_gallery (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		restaurant_id INTEGER NOT NULL,
+		image TEXT NOT NULL,
+		FOREIGN KEY (restaurant_id) REFERENCES user(id)
+	)
 
 
 </sql><sql name="CREATE VIEWS">CREATE VIEW reservations_users AS
