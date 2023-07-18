@@ -211,7 +211,7 @@ async function registerAdmin(req) {
   } = req.body;
   const password_hash = await bcrypt.hash(password, 8);
   const sql =
-    "INSERT INTO user (firstname, lastname, email, restaurant_name, location, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO user (firstname, lastname, email, restaurant_name, location, role, password, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   try {
     let user = await new Promise((resolve, reject) => {
@@ -225,6 +225,7 @@ async function registerAdmin(req) {
           location,
           role,
           password_hash,
+          1
         ],
         function (err) {
           if (err) {
@@ -243,7 +244,7 @@ async function registerAdmin(req) {
               lastname: lastname,
               email: email,
               role: role,
-              verified: 0,
+              verified: 1,
             });
           }
         }

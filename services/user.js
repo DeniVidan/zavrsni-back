@@ -47,6 +47,7 @@ const {
   deleteReservation,
   deleteExistingReservation,
   deleteCode,
+  deleteReview,
 } = require("../services/delete");
 
 require("dotenv").config();
@@ -297,34 +298,39 @@ exports.reserveTable = function () {
       console.log("result: ", result)
       res.status(200).send({ result, msg: "Table reserved successfully!" });
       console.log("EMAIL: ", result.reservation.email);
-      let transporter = nodemailer.createTransport({
-        host: "smtp.zoho.eu",
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-          user: process.env.EMAIL, // your email address
-          pass: process.env.PASSWORD, // your email password
-        },
-      });
-      let date = `${result.reservation.month}/${result.reservation.day}/${result.reservation.year}`;
-      let start_time = result.reservation.start_time;
-      let end_time = result.reservation.end_time;
-      let mailOptions = {
-        from: `"Deni" <${process.env.EMAIL}>`, // sender address
-        to: result.reservation.email, // list of receivers
-        subject: "Reservation accepted ✓", // Subject line
-        text: `Thank you ${result.reservation.name} for choosing our restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
-        html: `Thank you <b>${result.reservation.name}</b> for choosing our restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b> `, // html body
-      };
+      if(result.reservation.user_id == result.reservation.restaurant_id) {
+        console.log("ISTO JE!")
+      } else {
+        let transporter = nodemailer.createTransport({
+          host: "smtp.zoho.eu",
+          port: 465,
+          secure: true, // true for 465, false for other ports
+          auth: {
+            user: process.env.EMAIL, // your email address
+            pass: process.env.PASSWORD, // your email password
+          },
+        });
+        let date = `${result.reservation.month}/${result.reservation.day}/${result.reservation.year}`;
+        let start_time = result.reservation.start_time;
+        let end_time = result.reservation.end_time;
+        let mailOptions = {
+          from: `"Deni" <${process.env.EMAIL}>`, // sender address
+          to: result.reservation.email, // list of receivers
+          subject: "Reservation accepted ✓", // Subject line
+          text: `Thank you ${result.reservation.name} for choosing our restaurant, your reservation has been accepted, looking forward to see you at ${date} from ${start_time} to ${end_time}`, // plain text body
+          html: `Thank you <b>${result.reservation.name}</b> for choosing our restaurant, your reservation has been accepted, looking forward to see you at <b>${date}</b> from <b>${start_time}</b> to <b>${end_time}</b> `, // html body
+        };
+  
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return console.log(error);
+          }
+          console.log("Message sent: %s", info.messageId);
+          // Preview only available when sending through an Ethereal account
+          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        });
+      }
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          return console.log(error);
-        }
-        console.log("Message sent: %s", info.messageId);
-        // Preview only available when sending through an Ethereal account
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      });
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -473,6 +479,20 @@ exports.deletePending = function () {
       console.error(err.message);
       // ovako ne šalje message
       res.status(500).json({ err: "Cant delete penfing error" });
+    }
+  };
+};
+
+exports.deleteReview = function () {
+  return async function (req, res) {
+    try {
+      let result = await deleteReview(req);
+      //console.log("result: ", result)
+      res.status(200).send({ result, msg: "Delete review successfull!" });
+    } catch (err) {
+      console.error(err.message);
+      // ovako ne šalje message
+      res.status(500).json({ err: "Cant delete review error" });
     }
   };
 };

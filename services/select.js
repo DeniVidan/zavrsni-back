@@ -476,7 +476,7 @@ async function getAllRestaurantsImages(req) {
 
 async function getGallery(req) {
   const { id } = req.query;
-  console.log("id: ", id)
+  console.log("bitan id: ", id)
   try {
     const rows = await new Promise((resolve, reject) => {
       db.all(

@@ -32,6 +32,8 @@ router.put("/rename/tables", [verify], user.renameTable());
 
 router.delete("/delete/termin", [verify], user.deleteTermin());
 
+router.delete("/delete/review", [verify], user.deleteReview());
+
 router.delete("/delete/table", [verify], user.deleteTable());
 
 router.put("/edit/user", [verify], user.editUser());
