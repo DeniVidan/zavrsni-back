@@ -94,8 +94,8 @@ async function deleteReservation(req) {
 }
 
 async function deleteExistingReservation(req) {
-  const { id } = req.query;
-  console.log("id reservation: ", id);
+  const { id, restaurant_id, user_id, email, firstname, lastname } = req.query;
+  console.log("id reservation: ", id, restaurant_id, user_id, email, firstname, lastname);
   const sql = "DELETE FROM reservations WHERE id = ?";
 
   try {
@@ -104,12 +104,26 @@ async function deleteExistingReservation(req) {
         if (err) {
           reject(err);
         } else {
-          resolve(reservation);
+          resolve(
+            reservation,
+            id, 
+            user_id, 
+            email, 
+            firstname, 
+            lastname
+            );
         }
       });
     });
     console.log("Reservation deleted successfully: ", reservation);
-    return { reservation };
+    return { reservation, 
+      id: id,
+      restaurant_id: restaurant_id,
+      user_id: user_id, 
+      email: email, 
+      firstname: firstname, 
+      lastname: lastname
+      };
   } catch (err) {
     console.log(err);
     throw new Error("Something went wrong!");

@@ -242,6 +242,8 @@ async function reserveTable(req) {
               month: month,
               year: year,
               name: name,
+              user_id: user_id,
+              restaurant_id: restaurant_id
             });
           }
         }

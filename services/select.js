@@ -70,7 +70,8 @@ async function getRestaurantTermins(req) {
         `SELECT user.*, termin.*
                     FROM user
                     INNER JOIN termin ON user.id = termin.restaurant_id 
-                    WHERE user.id = ?`,
+                    WHERE user.id = ?
+                    ORDER BY termin.start_time`,
         [id],
         (err, rows) => {
           if (err) reject(err);
@@ -248,7 +249,7 @@ async function getAllRestaurantsReservations(req) {
     //console.log("daj mi id sad za reservations: ", id, day, month, year);
     const rows = await new Promise((resolve, reject) => {
       db.all(
-        `SELECT user.email as restaurant_email, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.firstname, reservations_users.lastname, reservations_users.table_id, reservations_users.termin_id, reservations_users.name, termin.start_time, termin.end_time
+        `SELECT user.email as restaurant_email, user.id as restaurant_id, reservations_users.reservation_id as reservation_id, reservations_users.user_id, reservations_users.email, reservations_users.firstname, reservations_users.lastname, reservations_users.table_id, reservations_users.termin_id, reservations_users.name, termin.start_time, termin.end_time
         FROM user
         LEFT JOIN reservations_users ON user.id = reservations_users.restaurant_id
         LEFT JOIN termin ON reservations_users.termin_id = termin.id

@@ -518,7 +518,9 @@ exports.deleteReservation = function () {
     try {
       let result = await deleteReservation(req);
       //console.log("result: ", result)
+      
       res.status(200).send({ result, msg: "Delete reservation successfull!" });
+     
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
@@ -533,6 +535,36 @@ exports.deleteExistingReservation = function () {
       let result = await deleteExistingReservation(req);
       //console.log("result: ", result)
       res.status(200).send({ result, msg: "Delete reservation successfull!" });
+      console.log("REZULT ZA DELETE REZERVACION: ", result)
+      if(result.user_id == result.restaurant_id) {
+        console.log("NE TREBA SLATI MAIL")
+      } else {
+        let transporter = nodemailer.createTransport({
+          host: "smtp.zoho.eu",
+          port: 465,
+          secure: true, // true for 465, false for other ports
+          auth: {
+            user: process.env.EMAIL, // your email address
+            pass: process.env.PASSWORD, // your email password
+          },
+        });
+        let mailOptions = {
+          from: `"Deni" <${process.env.EMAIL}>`, // sender address
+          to: result.email, // list of receivers
+          subject: "Reservation canceled X", // Subject line
+          text: `We sincerely apologize, ${result.firstname}, but we regret to inform you that the reservation you made has been canceled due to inclement weather or other unforeseen circumstances.`, // plain text body
+          html: `We sincerely apologize, ${result.firstname}, but we regret to inform you that the reservation you made has been canceled due to inclement weather or other unforeseen circumstances.`, // html body
+        };
+  
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return console.log(error);
+          }
+          console.log("Message sent: %s", info.messageId);
+          // Preview only available when sending through an Ethereal account
+          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        });
+      }
     } catch (err) {
       console.error(err.message);
       // ovako ne šalje message
